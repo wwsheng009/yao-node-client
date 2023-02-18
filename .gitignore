@@ -1,0 +1,7 @@
+logs
+db/*.db
+db/*.session
+temp.json
+node_modules
+data
+dist
