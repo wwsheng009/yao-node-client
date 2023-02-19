@@ -1,16 +1,17 @@
 {
-  "name": "yao-client",
+  "name": "yao-node-client",
   "version": "1.0.0",
   "description": "create yao script with typescript",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/scripts/myscript.ts",
-    "run": "pnpm run build  && ts-node src/scripts/myscript.ts",
-    "build": "tsc",
-    "build_lib": "tsc --module esnext",
-    "build_yao": "rm -rf yao && tsc -p ./tsconfig-yao.json && pnpm run clean_up",
-    "clean_up": "ts-node src/tools/clean_up.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' -r tsconfig-paths/register src/app/scripts/myscript.ts",
+    "run": "pnpm run build  && ts-node -r tsconfig-paths/register src/app/scripts/myscript.ts",
+    "build": "tsc && tsc-alias",
+    "build:watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
+    "build:lib": "tsc --module esnext && tsc-alias",
+    "build:yao": "rm -rf yao && tsc -p ./tsconfig-yao.json && tsc-alias && pnpm run clean_up",
+    "clean:up": "ts-node -r tsconfig-paths/register src/tools/clean_up.ts",
     "esbuild": "node build.js"
   },
   "keywords": [
@@ -28,9 +29,12 @@
     "@types/node": "^18.14.0",
     "@types/sync-fetch": "^0.4.0",
     "@types/ws": "^8.5.4",
+    "concurrently": "^7.6.0",
     "esbuild": "^0.17.8",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.2",
+    "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.5"
   }
 }

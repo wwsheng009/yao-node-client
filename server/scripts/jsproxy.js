@@ -17,16 +17,18 @@ function Server(payload) {
   const method = payload.method;
   const args = payload.args;
   const space = payload.space; //"dsl","script","system"
-
+  let localParams = [];
+  if (Array.isArray(args)) {
+    localParams = args;
+  } else {
+    localParams.push(args);
+  }
   switch (type) {
     case "Process":
-      let localParams = [];
-      if (Array.isArray(args)) {
-        localParams = args;
-      } else {
-        localParams.push(args);
-      }
       return Process(method, ...localParams);
+    case "Studio":
+      __YAO_SU_ROOT = true;
+      return Studio(method, ...localParams);
     case "Query":
       const query = new Query();
       return query[method](args);
@@ -55,6 +57,7 @@ function Server(payload) {
       }
     case "Translate":
       return $L(payload.message);
+
     default:
       break;
   }

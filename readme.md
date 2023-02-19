@@ -158,11 +158,15 @@ pnpm exec tsc --init --rootDir src --outDir dist
 - nodemon 用于自动监测源文件的变动
 - ts-node 用于直接自动编译执行 ts-node
 - dotenv 解析环境变量文件.env
+- tsc-alias tsc 别名引用问题
+- tsconfig-paths ts-node 别名引用问题
 
 ```
 pnpm i -D @types/node nodemon  ts-node
 pnpm i dotenv
-
+pnpm i -D tsc-alias
+pnpm i -D concurrently
+pnpm i -D tsconfig-paths
 ```
 
 ### vscode 调试使用
