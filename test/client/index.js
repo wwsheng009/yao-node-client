@@ -1,7 +1,7 @@
 //用于nodejs 调试代理
 import fetch from "sync-fetch";
 import WebSocketClient from "ws";
-import { CallProcess, CheckFilePath } from "./local";
+import { CallLocalProcess, CheckIsLocalProcessFilePath, CheckIsLocalStudio, } from "./local";
 let apiKey = ""; //process.env.YAO_API_KEY;
 let proxyServerUrl = ""; //process.env.YAO_PROXY_SERVER_URL; //"http://localhost:5199/api/proxy/call";
 require("dotenv").config();
@@ -33,11 +33,10 @@ function RemoteRequest(payload) {
  */
 function Process(method, ...args) {
     // if (method.startsWith("scripts.")) {
-    let obj = CheckFilePath(method);
+    let obj = CheckIsLocalProcessFilePath(method);
     if (obj) {
-        return CallProcess(obj.fpath, obj.method, ...args);
+        return CallLocalProcess(obj.fpath, obj.method, ...args);
     }
-    // }
     return RemoteRequest({ type: "Process", method: method, args });
 }
 function testProcess() {
@@ -47,6 +46,13 @@ function testProcess() {
 function testProcess2() {
     let res = Process("utils.str.Concat", "hello", "World");
     console.log(res);
+}
+function Studio(method, ...args) {
+    let obj = CheckIsLocalStudio(method);
+    if (obj) {
+        return CallLocalProcess(obj.fpath, obj.method, ...args);
+    }
+    return RemoteRequest({ type: "Studio", method: method, args });
 }
 /**
  * Yao Query 查询引擎代理
@@ -326,16 +332,9 @@ class FS {
         });
     }
 }
-//
-//
-// http.Head	[<URL>, <Payload (可选)>, <Query (可选)>, <Headers (可选)>]	响应结果	发送 HTTP HEAD 请求 示例 文档
-// http.Put	[<URL>, <Payload (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP PUT 请求 示例 文档
-// http.Patch	[<URL>, <Payload (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP PATCH 请求 示例 文档
-// http.Delete	[<URL>, <Payload (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP DELETE 请求 示例 文档
-// http.Send	[<METHOD>, <URL>, <Query (可选)>, <Payload (可选)>, <Headers (可选)>]	响应结果	发送 HTTP POST 请求, 返回 JSON 数据 示例 文档
 /**
  * 使用 http 对象发送 HTTP 请求，参数表与返回值与 http.* 处理器一致
- * 虽然可以直接使用fetch
+ * 虽然可以直接使用fetch，但是在参数与文件处理上比较麻烦
  */
 const http = {
     /**
@@ -374,6 +373,8 @@ const http = {
     },
     /**
      * YAO Http Head 代理
+     *
+     * http.Head	[<URL>, <Payload (可选)>, <Query (可选)>, <Headers (可选)>]	响应结果	发送 HTTP HEAD 请求 示例 文档
      * @param {string} URL 目标网址
      * @param {object} Payload 请求数据
      * @param {object} Files 上传文件
@@ -391,6 +392,8 @@ const http = {
     },
     /**
      * YAO Http Put 代理
+     *
+     * http.Put	[<URL>, <Payload (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP PUT 请求 示例 文档
      * @param {string} URL 目标网址
      * @param {object} Payload 请求数据
      * @param {object} Files 上传文件
@@ -408,6 +411,8 @@ const http = {
     },
     /**
      * YAO Http Patch Put 代理
+     *
+     * http.Patch	[<URL>, <Payload (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP PATCH 请求 示例 文档
      * @param {string} URL 目标网址
      * @param {object} Payload 请求数据
      * @param {object} Files 上传文件
@@ -424,7 +429,9 @@ const http = {
         return RemoteRequest(payload);
     },
     /**
-     * YAO Http Put 代理
+     * YAO Http Delete 代理
+     *
+     * http.Delete	[<URL>, <Payload (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP DELETE 请求 示例 文档
      * @param {string} URL 目标网址
      * @param {object} Payload 请求数据
      * @param {object} Files 上传文件
@@ -442,6 +449,8 @@ const http = {
     },
     /**
      * YAO Http Send 代理
+     *
+     * http.Send	[<METHOD>, <URL>, <Query (可选)>, <Payload (可选)>, <Headers (可选)>]	响应结果	发送 HTTP POST 请求, 返回 JSON 数据 示例 文档
      * @param {string} URL 目标网址
      * @param {object} Payload 请求数据
      * @param {object} Files 上传文件
@@ -531,26 +540,56 @@ class Exception extends Error {
         this.code = code;
     }
 }
+/**
+ * 模拟ws客户端。
+ *
+ * https://github.com/websockets/ws
+ */
 class WebSocket {
     url;
     protocols;
     client;
-    push;
+    ready;
+    messages;
+    /**
+     *
+     * @param url ws服务地址
+     * @param protocols 协议
+     */
     constructor(url, protocols) {
         this.url = url;
         this.protocols = protocols;
-        this.client = new WebSocketClient(this.url, protocols);
-        // yao js api目前还不支持ws 回调函数
-        // this.on = this.client.on;
-        // this.emit = this.client.emit;
-        // this.send = this.client.send;
-        this.push = this.client.send;
-        // this.onopen = this.client.onopen;
-        // this.onmessage = this.client.onmessage;
-        // this.onclose = this.client.onclose;
-        // this.close = this.client.close;
+        this.messages = [];
+        this.client = new WebSocketClient(this.url, [protocols]);
+        let ref = this;
+        this.client.on("open", function open() {
+            ref.ready = true;
+            for (let index = 0; index < ref.messages.length; index++) {
+                let obj = ref.messages.shift();
+                ref.push(obj);
+            }
+        });
+        this.client.on("error", () => {
+            throw Error("连接异常");
+        });
+        this.client.on("message", function message(data) {
+            console.log("received: %s", data);
+        });
+    }
+    /**
+     *发送数据
+     * @param params 参数
+     */
+    push(params) {
+        if (!this.ready) {
+            this.messages.push(params);
+        }
+        else {
+            this.client.send(params);
+        }
     }
 }
+//另外一个可选项，使用远程调用的yao的push方法
 class WebSocketYao {
     url;
     protocols;
@@ -562,6 +601,8 @@ class WebSocketYao {
         const payload = {
             type: "WebSocket",
             method: "push",
+            url: this.url,
+            protocols: this.protocols,
             message: message,
         };
         return RemoteRequest(payload);
@@ -580,13 +621,4 @@ function $L(args) {
     };
     return RemoteRequest(payload);
 }
-// exports.Process = Process;
-// exports.http = http;
-// exports.Query = Query;
-// exports.FS = FS;
-// exports.Store = Store;
-// exports.log = log;
-// exports.Exception = Exception;
-// exports.WebSocket = WebSocket;
-export { Process, http, Query, FS, Store, log, Exception, WebSocket, $L };
-//# sourceMappingURL=index.js.map
+export { Process, Studio, http, Query, FS, Store, log, Exception, WebSocket, $L, };

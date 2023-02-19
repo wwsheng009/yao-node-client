@@ -10,8 +10,9 @@
     "build": "tsc && tsc-alias",
     "build:watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "build:lib": "tsc --module esnext && tsc-alias",
-    "build:yao": "rm -rf yao && tsc -p ./tsconfig-yao.json && tsc-alias && pnpm run clean_up",
-    "clean:up": "ts-node -r tsconfig-paths/register src/tools/clean_up.ts",
+    "build:yao": "tsc -p ./tsconfig-yao.json && tsc-alias -p ./tsconfig-yao.json && pnpm run clean:up",
+    "clean:up2": "ts-node -r tsconfig-paths/register src/tools/clean_up.ts",
+    "clean:up": "node dist/tools/clean_up.js",
     "esbuild": "node build.js"
   },
   "keywords": [
@@ -22,10 +23,12 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.0.3",
+    "mime": "^3.0.0",
     "sync-fetch": "^0.4.2",
     "ws": "^8.12.1"
   },
   "devDependencies": {
+    "@types/mime": "^3.0.1",
     "@types/node": "^18.14.0",
     "@types/sync-fetch": "^0.4.0",
     "@types/ws": "^8.5.4",
