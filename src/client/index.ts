@@ -24,7 +24,7 @@ if (process.env.YAO_PROXY_SERVER_URL) {
 function RemoteRequest(payload: {
   type: string;
   method: string;
-  params?: object;
+  args?: object;
   space?: string;
   key?: string;
   value?: object;
@@ -47,18 +47,18 @@ function RemoteRequest(payload: {
 /**
  * YAO Process处理器代理
  * @param {string} method 处理器名称
- * @param  {...any} params 参数
+ * @param  {...any} args 参数
  * @returns
  */
-function Process(method: string, ...params: any[]) {
-  if (method.startsWith("scripts.")) {
-    let obj = CheckFilePath(method);
-    if (obj) {
-      return CallProcess(obj.fpath, obj.method, ...params);
-    }
+function Process(method: string, ...args: any[]) {
+  // if (method.startsWith("scripts.")) {
+  let obj = CheckFilePath(method);
+  if (obj) {
+    return CallProcess(obj.fpath, obj.method, ...args);
   }
+  // }
 
-  return RemoteRequest({ type: "Process", method: method, params });
+  return RemoteRequest({ type: "Process", method: method, args });
 }
 function testProcess() {
   Process("utils.fmt.Print", "hello");
@@ -79,11 +79,11 @@ class Query {
    *
    * query.Get({"select":["id"], "from":"user", "limit":1})
    *
-   * @param {object} params 查询条件
+   * @param {object} args 查询条件
    * @returns []Record
    */
-  Get(params: QueryDSL) {
-    return RemoteRequest({ type: "Query", method: "Get", params });
+  Get(args: QueryDSL) {
+    return RemoteRequest({ type: "Query", method: "Get", args });
   }
 
   // Paginate  {
@@ -100,33 +100,33 @@ class Query {
    *
    * query.Paginate({"select":["id"], "from":"user"})
    *
-   * @param {QueryDSL} params 查询条件
+   * @param {QueryDSL} args 查询条件
    * @returns Paginate
    */
-  Paginate(params: QueryDSL) {
-    return RemoteRequest({ type: "Query", method: "Paginate", params });
+  Paginate(args: QueryDSL) {
+    return RemoteRequest({ type: "Query", method: "Paginate", args });
   }
   /**
    * 执行查询并返回一条数据记录
    *
    * query.First({"select":["id"], "from":"user"})
    *
-   * @param {QueryDSL} params 查询条件
+   * @param {QueryDSL} args 查询条件
    * @returns Record
    */
-  First(params: QueryDSL) {
-    return RemoteRequest({ type: "Query", method: "First", params });
+  First(args: QueryDSL) {
+    return RemoteRequest({ type: "Query", method: "First", args });
   }
   /**
    * 执行查询根据查询条件返回结果
    *
    * query.Run({"stmt":"show version"})
    *
-   * @param {*} params
+   * @param {*} args
    * @returns object
    */
-  Run(params: QueryDSL) {
-    return RemoteRequest({ type: "Query", method: "Run", params });
+  Run(args: QueryDSL) {
+    return RemoteRequest({ type: "Query", method: "Run", args });
   }
 }
 // Query Declaration
@@ -173,6 +173,7 @@ class Store {
 }
 // Query Declaration
 
+type FSSAPCE = "system" | "script" | "dsl";
 /**
  * 使用 FS 对象实现文件操作。 Yao 提供 System, DSL, Script 三个空间,
  * System 用于应用数据操作,
@@ -181,172 +182,173 @@ class Store {
  * DSL 和 Script 只能用于 stuido 脚本。
  *
  * let fs = new FS("system");
+ *
  * let data = fs.ReadFile("/f1.txt"); // /data/app/data/f1.txt
  */
 class FS {
-  space: string;
-  constructor(space: string) {
+  space: FSSAPCE;
+  constructor(space: FSSAPCE) {
     this.space = space;
   }
   ReadFile(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "ReadFile",
-      params: [path],
+      args: [path],
     });
   }
   ReadFileBuffer(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "ReadFileBuffer",
-      params: [path],
+      args: [path],
     });
   }
   WriteFile(path: string, str: any, mode?: number) {
     return RemoteRequest({
       type: "FileSystem",
       method: "WriteFile",
-      params: [path, str, mode],
+      args: [path, str, mode],
     });
   }
   WriteFileBuffer(path: string, buffer: any, mode?: number) {
     return RemoteRequest({
       type: "FileSystem",
       method: "WriteFileBuffer",
-      params: [path, buffer, mode],
+      args: [path, buffer, mode],
     });
   }
   ReadDir(path: string, recursive?: boolean) {
     return RemoteRequest({
       type: "FileSystem",
       method: "ReadDir",
-      params: [path, recursive],
+      args: [path, recursive],
     });
   }
   Mkdir(path: string, mode?: number) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Mkdir",
-      params: [path, mode],
+      args: [path, mode],
     });
   }
   MkdirAll(path: string, mode?: number) {
     return RemoteRequest({
       type: "FileSystem",
       method: "MkdirAll",
-      params: [path, mode],
+      args: [path, mode],
     });
   }
   MkdirTemp(path: string, fitler?: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "MkdirTemp",
-      params: [path, fitler],
+      args: [path, fitler],
     });
   }
   Exists(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Exists",
-      params: [path],
+      args: [path],
     });
   }
   IsDir(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "IsDir",
-      params: [path],
+      args: [path],
     });
   }
   IsFile(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "IsFile",
-      params: [path],
+      args: [path],
     });
   }
   Remove(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Remove",
-      params: [path],
+      args: [path],
     });
   }
   RemoveAll(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "RemoveAll",
-      params: [path],
+      args: [path],
     });
   }
   Chmod(path: string, mode?: number) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Chmod",
-      params: [path, mode],
+      args: [path, mode],
     });
   }
   BaseName(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "BaseName",
-      params: [path],
+      args: [path],
     });
   }
   DirName(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "DirName",
-      params: [path],
+      args: [path],
     });
   }
   ExtName(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "ExtName",
-      params: [path],
+      args: [path],
     });
   }
   MimeType(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "MimeType",
-      params: [path],
+      args: [path],
     });
   }
   Mode(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Mode",
-      params: [path],
+      args: [path],
     });
   }
   Size(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Size",
-      params: [path],
+      args: [path],
     });
   }
   ModTime(path: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "ModTime",
-      params: [path],
+      args: [path],
     });
   }
   Copy(path: string, target: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Copy",
-      params: [path, target],
+      args: [path, target],
     });
   }
   Move(path: string, target: string) {
     return RemoteRequest({
       type: "FileSystem",
       method: "Move",
-      params: [path, target],
+      args: [path, target],
     });
   }
 }
@@ -385,7 +387,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Post",
-      params: [URL, Payload, Files, Query, Headers],
+      args: [URL, Payload, Files, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -401,7 +403,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Get",
-      params: [URL, Query, Headers],
+      args: [URL, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -424,7 +426,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Head",
-      params: [URL, Payload, Files, Query, Headers],
+      args: [URL, Payload, Files, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -447,7 +449,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Put",
-      params: [URL, Payload, Files, Query, Headers],
+      args: [URL, Payload, Files, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -470,7 +472,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Patch",
-      params: [URL, Payload, Files, Query, Headers],
+      args: [URL, Payload, Files, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -493,7 +495,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Delete",
-      params: [URL, Payload, Files, Query, Headers],
+      args: [URL, Payload, Files, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -517,7 +519,7 @@ const http = {
     const payload = {
       type: "Http",
       method: "Send",
-      params: [METHOD, URL, Payload, Files, Query, Headers],
+      args: [METHOD, URL, Payload, Files, Query, Headers],
     };
     return RemoteRequest(payload);
   },
@@ -527,59 +529,59 @@ const http = {
  * 日志对象
  */
 const log = {
-  Trace(format: string, ...params: any[]) {
+  Trace(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Trace",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
-  Debug(format: string, ...params: any[]) {
+  Debug(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Debug",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
-  Info(format: string, ...params: any[]) {
+  Info(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Info",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
-  Warn(format: string, ...params: any[]) {
+  Warn(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Warn",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
-  Error(format: string, ...params: any[]) {
+  Error(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Error",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
-  Fatal(format: string, ...params: any[]) {
+  Fatal(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Fatal",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
-  Panic(format: string, ...params: any[]) {
+  Panic(format: string, ...args: any[]) {
     const payload = {
       type: "Log",
       method: "Panic",
-      params: [format, ...params],
+      args: [format, ...args],
     };
     return RemoteRequest(payload);
   },
@@ -636,7 +638,19 @@ class WebSocketYao {
     return RemoteRequest(payload);
   }
 }
-
+/**
+ * 翻译文本
+ * @param args 文本
+ * @returns
+ */
+function $L(args: string) {
+  const payload = {
+    type: "Translate",
+    method: "",
+    message: args,
+  };
+  return RemoteRequest(payload);
+}
 // exports.Process = Process;
 // exports.http = http;
 // exports.Query = Query;
@@ -646,4 +660,4 @@ class WebSocketYao {
 // exports.Exception = Exception;
 // exports.WebSocket = WebSocket;
 
-export { Process, http, Query, FS, Store, log, Exception, WebSocket };
+export { Process, http, Query, FS, Store, log, Exception, WebSocket, $L };

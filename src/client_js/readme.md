@@ -10,7 +10,7 @@ yao 在调用 js 脚本时会自动的插入一些 yao 引擎特有的 js 对象
 
 代理客户端 <<======>> 代理服务端。
 
-## 功能实现
+### 功能实现
 
 1 创建新的一个 nodejs 的开发环境，或是在现有的 nodejs 开发环境里升级。
 
@@ -25,8 +25,6 @@ npm i sync-fetch
 创建 yao 引擎 的 jsapi 服务器端代理处理程序。
 
 把 jsProxy.js 放在 scripts 目录下，它的作用是充当 jsapi 的本地代理，提供给远程调用一个统一的处理入口。这里并不会作太多的数据检查，因为它是与客户端有协议的，对于的必要数据对象都需要在客户端填充。
-
-这里一定要使用 js 脚本，而不是 ts 脚本，yao 并不直接支持 ts。
 
 ```js
 /**
@@ -83,7 +81,7 @@ function Server(payload) {
 }
 ```
 
-### 配置 api 接口
+## 配置 api 接口
 
 在 apis 目录下新增一个 api 配置，用于调用本地代理。所有的代理对象的调用都会通过这个接口进行流转
 
@@ -114,7 +112,41 @@ function Server(payload) {
 
 ### 客户端
 
-#### ts 开发环境准备
+客户端的代码写在 src/client/index.ts 文件中。其中的函数定义都是对远程 yao jsapi 接口封装。导出以下几个对象,名称与在 yao 引擎的定义保持一致。
+
+```ts
+export { Process, http, Query, FS, Store, log, Exception, WebSocket, $L };
+```
+
+调试 yao 处理器 ts 脚本
+在需要调试的 ts 脚本的头部分插入以下代码,这样 yao 的特定对象就可以在 nodejs 的环境中使用。
+
+```ts
+import {
+  Process,
+  http,
+  FS,
+  Query,
+  Store,
+  Exception,
+  log,
+  WebSocket,
+  $L,
+} from "../yao-client";
+```
+
+**注意：**
+在调试过程中，代理的对象需要远程访问 yao 的服务器，所以需要在测试之前需要先启用 yao 服务器
+
+```sh
+yao start
+```
+
+```sh
+node test/testClient.js
+```
+
+功能测试成功后，把 js 脚本中的 YAO 对象引用行注释后再放到 yao 项目的 scripts 目录下
 
 ## 使用 typescript
 
@@ -138,7 +170,17 @@ pnpm exec tsc --init --rootDir src --outDir dist
 ```json
 {
   "compilerOptions": {
-    "module": "commonjs", //指定生成哪个模块系统代码
+    "module": "commonjs" //指定生成哪个模块系统代码
+  }
+}
+```
+
+在编译阶段，module 需要设置成 esnext 或是 es2020。这是因为需要把 ts 编译生成的 js 中的模块引入部分删除，使用 module:commonjs 会把 import 代码作了转换，这并不是我们想要的结果
+
+```json
+{
+  "compilerOptions": {
+    "module": "ESNext", //指定生成哪个模块系统代码
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "es6", //目标代码类型
@@ -152,12 +194,7 @@ pnpm exec tsc --init --rootDir src --outDir dist
 }
 ```
 
-其它依赖:
-
-- @types/node 基础的 ts 类型
-- nodemon 用于自动监测源文件的变动
-- ts-node 用于直接自动编译执行 ts-node
-- dotenv 解析环境变量文件.env
+其它依赖
 
 ```
 pnpm i -D @types/node nodemon  ts-node
@@ -165,7 +202,26 @@ pnpm i dotenv
 
 ```
 
-### vscode 调试使用
+## 运行
+
+```json
+"scripts": {
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/scripts/myscript.ts",
+    "myscript": "pnpm run build  && ts-node src/scripts/myscript.ts",
+    "build": "tsc",
+    "run": "node dist/index.js",
+    "build_lib": "tsc --module esnext",
+    "esbuild": "node build.js"
+  }
+```
+
+## 调试
+
+```sh
+pnpm run myscript
+```
+
+## vscode 调试使用
 
 配置 vscode 编辑器的 launch.json 配置
 
@@ -208,114 +264,15 @@ pnpm i dotenv
 }
 ```
 
-### 代理客户端
-
-客户端的代码写在 src/client/index.ts 文件中。其中的函数定义都是对远程 yao jsapi 接口封装。导出以下几个对象,名称与在 yao 引擎的定义保持一致。
-
-```ts
-export { Process, http, Query, FS, Store, log, Exception, WebSocket, $L };
-```
-
-调试 yao 处理器 ts 脚本
-在需要调试的 ts 脚本的头部分插入以下代码,这样 yao 的特定对象就可以在 nodejs 的环境中使用。
-
-```ts
-import {
-  Process,
-  http,
-  FS,
-  Query,
-  Store,
-  Exception,
-  log,
-  WebSocket,
-  $L,
-} from "../yao-client";
-```
-
-**注意：**
-在调试过程中，代理的对象需要远程访问 yao 的服务器，所以需要在测试之前需要先启用 yao 服务器，在你的 yao 目录下执行:
-
-```sh
-yao start
-```
-
-### ts 代码开发测试
-
-本质上与一般的 ts 开发是一样的。
-
-在 src/app 目录下使用 ts 进行代码编写。scripts/services/studio 对应 yao 应用的目录结构.
-
-### 运行
-
-由于上面已经配置了 vscode 的运行调试配置，可以直接使用 vscode 的运行调试功能。
-
-也可以在 package.json 里配置其它的执行命令。
-
-```json
-"scripts": {
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/scripts/myscript.ts",
-    "myscript": "pnpm run build  && ts-node src/scripts/myscript.ts",
-    "build": "tsc",
-    "run": "node dist/index.js",
-    "build_lib": "tsc --module esnext",
-    "build_yao": "rm -rf yao && tsc -p ./tsconfig-yao.json",
-    "esbuild": "node build.js"
-  }
-```
-
-```sh
-# 编译执行特定的脚本
-pnpm run myscript
-```
-
 ## 编译生成
 
-最后一步是把 ts 代码转换成 js 脚本。
-
-tsc 编译使用配置 module:commonjs 会对编译后的 js 代码作了格式转换，这并不是我们想要的结果。所以在最后编译 yao js 脚本时需要把 tsc 参数 module 需要设置成 esnext 或是 es2020。生成的 js 文件格式是我们想要的。
-
-编译后，可以在 dist/app 目录找到生成的文件。
-
-- 编译出 js 文件
+在 tsc 中指定参数 module=esnext，在 dist 目录找到生成的文件。
+在文件中删除对代理 client 的引用
+在文件中删除所有的 export 语句
+复制到 yao 应用的/scripts 目录。
 
 ```sh
-pnpm run build_yao
-```
-
-- 在文件中注释对代理对象的引用
-
-```js
-//import { Process } from "../../client";
-```
-
-- 在文件中删除所有的 export 关键字
-
-```js
-//before
-export funtion foo(){
-
-}
-//after
-function foo(){
-
-}
-```
-
-- 把 dist/app 目录下的文件复制到 yao 应用的对应的目录下。
-
-```sh
-├── dist
-│   ├── app
-│   │   ├── scripts
-│   │   │   ├── myscript.js
-│   │   │   ├── script2.js
-│   │   │   └── sub
-│   │   │       ├── demo.js
-│   │   ├── services
-│   │   │   ├── foo.js
-│   │   └── studio
-│   │       ├── hello.js
+pnpm run build_lib
 ```
 
 ## 支持哪些调用

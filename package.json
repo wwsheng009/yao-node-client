@@ -6,10 +6,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/scripts/myscript.ts",
-    "myscript": "pnpm run build  && ts-node src/scripts/myscript.ts",
+    "run": "pnpm run build  && ts-node src/scripts/myscript.ts",
     "build": "tsc",
-    "run": "node dist/index.js",
     "build_lib": "tsc --module esnext",
+    "build_yao": "rm -rf yao && tsc -p ./tsconfig-yao.json && pnpm run clean_up",
+    "clean_up": "ts-node src/tools/clean_up.ts",
     "esbuild": "node build.js"
   },
   "keywords": [

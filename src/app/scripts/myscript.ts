@@ -1,4 +1,4 @@
-import { Process } from "../client";
+import { Process } from "../../client";
 
 function main() {
   let res = Process("utils.str.Concat", "hello", new Date());

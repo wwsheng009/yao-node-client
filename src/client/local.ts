@@ -12,17 +12,25 @@ export function CallProcess(fpath: string, method: string, ...params: any[]) {
 
 export function CheckFilePath(name: string) {
   let paths = name.split(".");
+  if (!paths || !paths.length) {
+    throw Error("非法的Process名称");
+  }
+  if (!["scripts", "services", "studio"].includes(paths[0])) {
+    //不代理
+    return false;
+  }
+
   if (paths.length < 2) {
     throw Error("错误的流程名称");
   }
-  const tokens = paths.splice(1, paths.length - 2);
+  const tokens = paths.splice(-1, 1);
 
-  const method = paths[paths.length - 1];
-  const fname = tokens.join(path.sep);
+  const method = tokens[0];
+  const fname = paths.join(path.sep);
   // console.log(tokens, paths);
 
-  let filePath = `dist/scripts/${fname}.js`;
-  let fpath = path.resolve(filePath);
+  const filePath = `dist/app/${fname}.js`;
+  const fpath = path.resolve(filePath);
   if (!fs.existsSync(fpath)) {
     return false;
   }
