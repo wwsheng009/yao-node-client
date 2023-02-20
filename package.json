@@ -10,7 +10,7 @@
     "build": "tsc && tsc-alias",
     "build:watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "esbuild:comp": "ts-node src/tools/build.ts -i dist_esm/app/scripts/rollup/index.js -o dist_esm/app/scripts/rollup/index.dist.js",
-    "esbuild:proxy-client": "esbuild dist_esm/yao-node-proxy-client/index.js --bundle --platform=node --outfile=dist_esm/yao-node-proxy-client/bound-cient.js",
+    "esbuild:proxy-client": "esbuild dist_esm/yao-node-client/index.js --bundle --platform=node --outfile=dist_esm/yao-node-client/bound-cient.js",
     "test": "jest",
     "rollup:comp": "rollup -c rollup.config.mjs -i dist_esm/app/scripts/rollup/index.js -o dist_esm/app/scripts/rollup/index.bound.js",
     "yao:build-direct": "rimraf dist_esm && tsc -p ./tsconfig-yao-deirect.json && tsc-alias -p ./tsconfig-yao-deirect.json",

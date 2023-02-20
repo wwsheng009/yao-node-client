@@ -59,7 +59,7 @@ esbuild
     format: "esm", //这里不要使用cjs,而是使用esm，生成的格式才不会乱
     bundle: true, //不需要打包
     platform: "node",
-    external: ["*/yao-node-proxy-client"],
+    external: ["*/yao-node-client"],
   })
   .then(() => {
     console.log(`input: ${input}==>output: ${output}`);

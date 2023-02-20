@@ -11,7 +11,7 @@ import {
   Store,
   Studio,
   WebSocket,
-} from "../yao-node-proxy-client";
+} from "../yao-node-client";
 
 /**
  * yao本地js api代理

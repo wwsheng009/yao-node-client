@@ -343,7 +343,7 @@ rollup 配置文件，配置文件中需要剔除对 yao-proxy 的引用。
 ```js
 export default {
   。。。
-  external: [/.*yao-node-proxy-client$/], //yao的代理客户端不要打包
+  external: [/.*yao-node-client$/], //yao的代理客户端不要打包
 };
 ```
 
@@ -363,7 +363,7 @@ pnpm i -D glob
 esbuild
   .build({
       。。。
-      external: ["*/yao-node-proxy-client"],
+      external: ["*/yao-node-client"],
   }
 ```
 

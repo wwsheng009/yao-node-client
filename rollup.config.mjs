@@ -48,5 +48,5 @@ export default {
     // typescript({ module: "esnext" }),
     commonjs({ include: "node_modules/**" }),
   ],
-  external: [/.*yao-node-proxy-client$/], //yao的代理客户端不要打包
+  external: [/.*yao-node-client$/], //yao的代理客户端不要打包
 };
