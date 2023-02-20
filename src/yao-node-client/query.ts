@@ -1,5 +1,5 @@
 import RemoteRequest from "./request";
-import { YaoQuery } from "@/types/query_dsl";
+import type { YaoQuery } from "../types/query_dsl";
 /**
  * Yao Query 查询引擎代理
  */

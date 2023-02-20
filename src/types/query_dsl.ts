@@ -1,4 +1,5 @@
 export namespace YaoQuery {
+  type Recordable<T = any> = Record<string, T>;
   /**QueryCondition 查询条件*/
   interface Condition {
     /**查询字段*/
@@ -33,7 +34,7 @@ export namespace YaoQuery {
   type Orders = Order[];
 
   /**Group 聚合条件*/
-  declare interface Group {
+  interface Group {
     /**排序字段*/
     field?: Expression;
     /**同时返回多层级统计结果，对应聚合字段数值的名称。*/

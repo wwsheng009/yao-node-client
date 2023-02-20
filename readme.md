@@ -15,9 +15,7 @@ yao 在调用 js 脚本时会自动的插入一些 yao 引擎特有的 js 对象
 1 创建新的一个 nodejs 的开发环境，或是在现有的 nodejs 开发环境里升级。
 
 ```sh
-cd scripts
-npm init
-npm i sync-fetch
+pnpm init
 ```
 
 ### 服务器端
@@ -27,61 +25,6 @@ npm i sync-fetch
 把 jsProxy.js 放在 scripts 目录下，它的作用是充当 jsapi 的本地代理，提供给远程调用一个统一的处理入口。这里并不会作太多的数据检查，因为它是与客户端有协议的，对于的必要数据对象都需要在客户端填充。
 
 这里一定要使用 js 脚本，而不是 ts 脚本，yao 并不直接支持 ts。
-
-```js
-/**
- * yao本地js api代理
- * @param {object} payload
- * @returns
- */
-function Server(payload) {
-  const type = payload.type;
-  const method = payload.method;
-  const args = payload.args;
-  const space = payload.space; //"dsl","script","system"
-  switch (type) {
-    case "Process":
-      let localParams = [];
-      if (Array.isArray(args)) {
-        localParams = args;
-      } else {
-        localParams.push(args);
-      }
-      return Process(method, ...localParams);
-    case "Query":
-      const query = new Query();
-      return query[method](args);
-    case "FileSystem":
-      const fs = new FS(space);
-      return fs[method](...args);
-    case "Store":
-      const cache = new Store(space);
-      if (method == "Set") {
-        return cache.Set(payload.key, payload.value);
-      } else if (method == "Get") {
-        return cache.Get(payload.key);
-      }
-    case "Http":
-      return http[method](...args);
-    case "Log":
-      // console.log("Log args:", args);
-      log[method](...args);
-      return {};
-    case "WebSocket":
-      //目前yao只是实现了push一个方法，也是ws服务连接后push一条信息
-      const ws = new WebSocket(payload.url, payload.protocols);
-      if (method == "push") {
-        ws.push(payload.message);
-        return {};
-      }
-    case "Translate":
-      return $L(payload.message);
-    default:
-      break;
-  }
-  throw new Exception("操作未支持", 404);
-}
-```
 
 ### 配置 api 接口
 
@@ -268,11 +211,6 @@ yao start
   }
 ```
 
-```sh
-# 编译执行特定的脚本
-pnpm run myscript
-```
-
 ## 单元测试
 
 设置单元测试(https://www.testim.io/blog/typescript-unit-testing-101/)
@@ -339,6 +277,8 @@ pnpm i -D @rollup/plugin-json
 ```
 
 rollup 配置文件，配置文件中需要剔除对 yao-proxy 的引用。
+
+rollup.config.mjs
 
 ```js
 export default {
@@ -448,3 +388,13 @@ tsconfig.json 设置`module:ESNext`也不影响操作，对调试会有影响，
 ## yao 脚本编写
 
 在 yao 中，基本上每一个 js 文件都是独立的功能点。脚本与脚本之间不能使用 import 或是 require 的方式进行引用。如果在一个脚本中需要引用别的脚本，需要使用 Process("scripts.script1.Fun")的方式进行调用。
+
+### 将 npm 包文件引入项目
+
+在项目 A 的根目录下使用 pnpm link --global 命令将 npm 包模块注册到全局，在全局的 node_modules 目录下会出现当前包所在项目的快捷方式引用。
+在项目 B 的根目录下使用 pnpm link --global yao-node-client 命令将包关联到项目中，然后正常使用即可。
+
+### 从项目中解除 pnpm 包文件
+
+在 项目 A 的根目录下使用 pnpm unlink --global 命令解除项目与全局的关联。
+在 项目 B 的根目录下使用 pnpm unlink yao-node-client 命令解除项目与本地 npm 包的关联。
