@@ -37,17 +37,17 @@ function getParams(param: string) {
 let input = args["input"] || getParams("-i") || getParams("--input");
 // let input = args.get("input") || getParams("-i") || getParams("--input");
 if (!input) {
-  input = "dist/client/index.js";
+  input = "dist_esm/client/index.js";
 } else {
-  input = "dist/app/" + input;
+  input = "dist_esm/app/" + input;
 }
 
 // let output = args.get("output") || getParams("-o") || getParams("--output");
 let output = args["output"] || getParams("-o") || getParams("--output");
 if (!output) {
-  output = "dist/client/index.dist.js";
+  output = "dist_esm/client/index.dist_esm.js";
 } else {
-  output = "dist/app/" + output;
+  output = "dist_esm/app/" + output;
 }
 
 esbuild

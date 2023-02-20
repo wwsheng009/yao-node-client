@@ -1,22 +1,25 @@
 import * as fs from "fs";
 import path from "node:path";
 
-let filesall = [] as string[];
-
 function getFiles(dir: string) {
-  const files = fs.readdirSync(dir);
+  let filesall = [] as string[];
 
-  files.forEach(function (file: string) {
-    const filePath = dir + "/" + file;
-    const fileStat = fs.lstatSync(filePath);
+  let getFile = (d: string) => {
+    const files = fs.readdirSync(d);
 
-    if (fileStat.isDirectory()) {
-      getFiles(filePath);
-    } else {
-      // console.log(filePath);
-      filesall.push(filePath);
-    }
-  });
+    files.forEach(function (file: string) {
+      const filePath = d + "/" + file;
+      const fileStat = fs.lstatSync(filePath);
+
+      if (fileStat.isDirectory()) {
+        getFile(filePath);
+      } else {
+        filesall.push(filePath);
+      }
+    });
+  };
+  getFile(dir);
+
   return filesall;
 }
 
@@ -30,37 +33,37 @@ function checkExtension(filePath: string) {
  * @param filename 文件名
  */
 function processComment(filename: string) {
-  fs.readFile(filename, "utf8", function (err, data) {
-    if (err) throw err;
+  if (!fs.existsSync(filename)) {
+    return;
+  }
+  const data = fs.readFileSync(filename, "utf8");
 
-    // add comment
-    const comment = "// ";
-    const lines = data.split("\n");
-    // lines[0] = comment + lines[0];
+  // add comment
+  const comment = "// ";
+  const lines = data.split("\n");
+  // lines[0] = comment + lines[0];
 
-    let needProcess = false;
-    for (let index = 0; index < lines.length; index++) {
-      const line = lines[index];
-      if (line.startsWith("import ") || line.startsWith("export {")) {
-        lines[index] = comment + line;
-        needProcess = true;
-      } else if (line.startsWith("export function")) {
-        lines[index] = line.slice("export ".length);
-        needProcess = true;
-      }
-      //other case
+  let needProcess = false;
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index];
+    if (line.startsWith("import ") || line.startsWith("export {")) {
+      lines[index] = comment + line;
+      needProcess = true;
+    } else if (line.startsWith("export function")) {
+      lines[index] = line.slice("export ".length);
+      needProcess = true;
     }
-    if (!needProcess) {
-      return;
-    }
-    const commentedData = lines.join("\n");
+    //other case
+  }
+  if (!needProcess) {
+    return;
+  }
+  const commentedData = lines.join("\n");
 
-    // save to new file
-    fs.writeFile(filename, commentedData, function (err) {
-      if (err) throw err;
-      console.log(`File ${filename} saved!`);
-    });
-  });
+  // save to new file
+  fs.writeFileSync(filename, commentedData);
+
+  console.log(`File ${filename} saved!`);
 }
 
 function renameFile(filename: string) {
@@ -68,6 +71,9 @@ function renameFile(filename: string) {
     return;
   }
   let res = path.resolve(filename);
+  if (!fs.existsSync(res)) {
+    return;
+  }
   let newname = res.substring(0, res.indexOf(`${path.sep}index.js`)) + ".js";
 
   fs.renameSync(filename, newname);
@@ -90,17 +96,25 @@ const deleteEmptyFolders = (dir: string) => {
 
 function main() {
   const folder = path.resolve("./yao/app");
-  const files = getFiles(folder);
+  let files = getFiles(folder);
+  //rename first
+  for (const file of files) {
+    const isJSFile = checkExtension(file);
+    if (!isJSFile) {
+      continue;
+    }
+    renameFile(file);
+  }
 
+  deleteEmptyFolders(folder);
+
+  files = getFiles(folder);
   for (const file of files) {
     const isJSFile = checkExtension(file);
     if (!isJSFile) {
       continue;
     }
     processComment(file);
-    renameFile(file);
   }
-
-  deleteEmptyFolders(folder);
 }
 main();
