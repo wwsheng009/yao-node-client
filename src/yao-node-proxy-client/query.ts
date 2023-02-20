@@ -1,6 +1,5 @@
-import { QueryDSL } from "@/types/dsl";
 import RemoteRequest from "./request";
-
+import { YaoQuery } from "@/types/query_dsl";
 /**
  * Yao Query 查询引擎代理
  */
@@ -14,7 +13,7 @@ export class Query {
    * @param {object} args 查询条件
    * @returns []Record
    */
-  Get(args: QueryDSL) {
+  Get(args: YaoQuery.DSL) {
     return RemoteRequest({ type: "Query", method: "Get", args });
   }
 
@@ -32,10 +31,10 @@ export class Query {
    *
    * query.Paginate({"select":["id"], "from":"user"})
    *
-   * @param {QueryDSL} args 查询条件
+   * @param {YaoQuery.DSL} args 查询条件
    * @returns Paginate
    */
-  Paginate(args: QueryDSL) {
+  Paginate(args: YaoQuery.DSL) {
     return RemoteRequest({ type: "Query", method: "Paginate", args });
   }
   /**
@@ -43,10 +42,10 @@ export class Query {
    *
    * query.First({"select":["id"], "from":"user"})
    *
-   * @param {QueryDSL} args 查询条件
+   * @param {YaoQuery.DSL} args 查询条件
    * @returns Record
    */
-  First(args: QueryDSL) {
+  First(args: YaoQuery.DSL) {
     return RemoteRequest({ type: "Query", method: "First", args });
   }
   /**
@@ -57,7 +56,7 @@ export class Query {
    * @param {*} args
    * @returns object
    */
-  Run(args: QueryDSL) {
+  Run(args: YaoQuery.DSL) {
     return RemoteRequest({ type: "Query", method: "Run", args });
   }
 }

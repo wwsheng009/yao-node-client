@@ -444,3 +444,7 @@ tsconfig.json 设置`module:ESNext`也不影响操作，对调试会有影响，
     "outDir": "dist",
   }
 ```
+
+## yao 脚本编写
+
+在 yao 中，基本上每一个 js 文件都是独立的功能点。脚本与脚本之间不能使用 import 或是 require 的方式进行引用。如果在一个脚本中需要引用别的脚本，需要使用 Process("scripts.script1.Fun")的方式进行调用。

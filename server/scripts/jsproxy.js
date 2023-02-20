@@ -1,6 +1,3 @@
-//代理js api请求
-//函数名称不要使用Process/Query/FS/Store
-
 /**
  * yao本地js api代理
  * @param {object} payload
@@ -11,9 +8,7 @@ function Server(payload) {
   // console.log(payload);
   // log.Info("debug served called");
   // log.Info(payload);
-
   const type = payload.type;
-
   const method = payload.method;
   const args = payload.args;
   const space = payload.space; //"dsl","script","system"
@@ -27,6 +22,7 @@ function Server(payload) {
     case "Process":
       return Process(method, ...localParams);
     case "Studio":
+      // @ts-ignore
       __YAO_SU_ROOT = true;
       return Studio(method, ...localParams);
     case "Query":
@@ -57,46 +53,8 @@ function Server(payload) {
       }
     case "Translate":
       return $L(payload.message);
-
     default:
       break;
   }
   throw new Exception("操作未支持", 404);
-}
-
-/**
- * yao-debug run scripts.remote.server.testProcess
- */
-function testProcess() {
-  let RequestBody = { type: "Process", method: "utils.now.Date" };
-  const res = Main(RequestBody);
-  console.log(res);
-}
-
-/**
- * yao-debug run scripts.remote.server.testProcess2
- * 测试数组
- */
-function testProcess2() {
-  let RequestBody = {
-    type: "Process",
-    method: "utils.str.Concat",
-    args: ["name:", "value"],
-  };
-  const res = Main(RequestBody);
-  console.log(res);
-}
-
-/**
- * yao-debug run scripts.remote.server.testProcess3
- * 测试一个参数
- */
-function testProcess3() {
-  let RequestBody = {
-    type: "Process",
-    method: "utils.fmt.Print",
-    args: new Date(),
-  };
-  const res = Main(RequestBody);
-  console.log(res);
 }
