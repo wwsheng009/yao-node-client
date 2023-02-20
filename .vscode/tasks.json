@@ -6,7 +6,7 @@
 			"script": "build",
 			"group": "build",
 			"problemMatcher": [],
-			"label": "tsc: build - tsconfig.json",
+			"label": "tsc: build",
 			"detail": "tsc"
 		}
 	]

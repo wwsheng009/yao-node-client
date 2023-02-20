@@ -5,10 +5,12 @@ import esbuild from "esbuild";
  * @param args 脚本输入参数
  * @returns
  */
-const parseArgs = (args) => {
-  let parsedArgs = {}; //new Map<string, string>();
+const parseArgs = (args: any[]) => {
+  let parsedArgs: {
+    [id: string]: string;
+  } = {};
 
-  args.forEach((arg) => {
+  args.forEach((arg: string) => {
     const parts = arg.split("=");
     // parsedArgs.set(parts[0], parts[1]);
     parsedArgs[parts[0]] = parts[1];
@@ -18,11 +20,11 @@ const parseArgs = (args) => {
 };
 const args = parseArgs(process.argv.slice(2));
 
-function getFlag(param) {
+function getFlag(param: string) {
   const flag = process.argv.indexOf(param) > -1 ? true : false;
   return flag;
 }
-function getParams(param) {
+function getParams(param: string) {
   const inputIndex = process.argv.indexOf(param) || process.argv.indexOf(param);
   let inputValue = "";
 

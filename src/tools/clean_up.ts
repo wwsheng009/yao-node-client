@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import path from "path";
+import path from "node:path";
 
 let filesall = [] as string[];
 
@@ -29,12 +29,7 @@ function checkExtension(filePath: string) {
  * 简单处理js文件
  * @param filename 文件名
  */
-function process(filename: string) {
-  const isJSFile = checkExtension(filename);
-  if (!isJSFile) {
-    return;
-  }
-
+function processComment(filename: string) {
   fs.readFile(filename, "utf8", function (err, data) {
     if (err) throw err;
 
@@ -46,7 +41,7 @@ function process(filename: string) {
     let needProcess = false;
     for (let index = 0; index < lines.length; index++) {
       const line = lines[index];
-      if (line.startsWith("import ")) {
+      if (line.startsWith("import ") || line.startsWith("export {")) {
         lines[index] = comment + line;
         needProcess = true;
       } else if (line.startsWith("export function")) {
@@ -67,12 +62,45 @@ function process(filename: string) {
     });
   });
 }
+
+function renameFile(filename: string) {
+  if (!filename.endsWith("index.js")) {
+    return;
+  }
+  let res = path.resolve(filename);
+  let newname = res.substring(0, res.indexOf(`${path.sep}index.js`)) + ".js";
+
+  fs.renameSync(filename, newname);
+}
+
+const deleteEmptyFolders = (dir: string) => {
+  let files = fs.readdirSync(dir);
+  if (files.length > 0) {
+    files.forEach((file) => {
+      let fullPath = path.join(dir, file);
+      if (fs.statSync(fullPath).isDirectory()) {
+        deleteEmptyFolders(fullPath);
+        if (fs.readdirSync(fullPath).length === 0) {
+          fs.rmdirSync(fullPath);
+        }
+      }
+    });
+  }
+};
+
 function main() {
   const folder = path.resolve("./yao/app");
   const files = getFiles(folder);
 
   for (const file of files) {
-    process(file);
+    const isJSFile = checkExtension(file);
+    if (!isJSFile) {
+      continue;
+    }
+    processComment(file);
+    renameFile(file);
   }
+
+  deleteEmptyFolders(folder);
 }
 main();

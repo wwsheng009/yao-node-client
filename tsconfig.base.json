@@ -19,6 +19,7 @@
         "noImplicitAny": true,
         "skipLibCheck": true
     },
+    //只有include的文件才会被编译
     "include": [
         "src/**/*.ts",
         "src/**/*.d.ts"
