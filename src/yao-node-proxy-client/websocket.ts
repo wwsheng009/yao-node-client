@@ -8,7 +8,7 @@ import RemoteRequest from "./request";
  * https://github.com/websockets/ws
  */
 export class WebSocket {
-  url: string;
+  url: string | URL;
   protocols: string;
   client: WebSocketClient;
   ready: boolean;
@@ -18,7 +18,7 @@ export class WebSocket {
    * @param url ws服务地址
    * @param protocols 协议
    */
-  constructor(url: string, protocols: string) {
+  constructor(url: string | URL, protocols: string) {
     this.url = url;
     this.protocols = protocols;
     this.messages = [];

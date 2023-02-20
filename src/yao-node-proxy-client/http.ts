@@ -6,7 +6,7 @@ export type HttpHeaders = object | object[];
  * 使用 http 对象发送 HTTP 请求，参数表与返回值与 http.* 处理器一致
  * 虽然可以直接使用fetch，但是在参数与文件处理上比较麻烦
  */
-export const http = {
+export const http: { [id: string]: Function } = {
   /**
    * YAO Http Post 代理
    * http.Post	[<URL>, <Payload (可选)>, <Files (可选)>, <Query(可选)>, <Headers (可选)>]	响应结果	发送 HTTP POST 请求 示例 文档

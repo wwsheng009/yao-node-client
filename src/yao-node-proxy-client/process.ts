@@ -70,7 +70,31 @@ export function Process(method: string, ...args: any[]) {
     var waitTill = new Date(new Date().getTime() + args[0]);
     while (waitTill > new Date()) {}
   }
+  // Time
+  if (method.startsWith("utils.now")) {
+    return processTime(method, ...args);
+  }
+  // Tree
+  if (method == "utils.tree.Flatten") {
+    return processFlatten(...args);
+  }
 
+  // Map
+  if (method.startsWith("utils.map") || method.startsWith("xiang.helper.map")) {
+    return processMap(method, ...args);
+  }
+
+  // Array
+  if (
+    method.startsWith("utils.arr") ||
+    method.startsWith("xiang.helper.array")
+  ) {
+    return processArry(method, ...args);
+  }
+  return RemoteRequest({ type: "Process", method: method, args });
+}
+function processTime(method: string, ...args: any[]) {
+  const process = method.toLowerCase();
   if ("utils.now.date" == process) {
     let dateBj = new Date();
     const offset = dateBj.getTimezoneOffset();
@@ -91,18 +115,14 @@ export function Process(method: string, ...args: any[]) {
     return dateBj.toLocaleTimeString();
   }
 
-  if (method.startsWith("utils.map") || method.startsWith("xiang.helper.map")) {
-    return processMap(method, ...args);
+  if ("utils.now.timestamp" == process) {
+    return new Date().getTime() / 1000;
   }
-  if (
-    method.startsWith("utils.arr") ||
-    method.startsWith("xiang.helper.array")
-  ) {
-    return processArry(method, ...args);
+  if ("utils.now.timestampms" == process) {
+    return new Date().getTime();
   }
   return RemoteRequest({ type: "Process", method: method, args });
 }
-
 function processMap(method: string, ...args: any[]) {
   let process = method.toLowerCase();
   //参数1是object，参数2是key
@@ -230,4 +250,49 @@ function processArry(method: string, ...args: any[]) {
   }
 
   return RemoteRequest({ type: "Process", method: method, args });
+}
+
+// ProcessFlatten utils.tree.Flatten cast to array
+function processFlatten(...args: any[]): any {
+  if (args.length < 1) {
+    throw new Error("参数错误");
+  }
+  const array: any[] = args[0];
+  const option: { [key: string]: any } = args[1] || {};
+  if (!option.hasOwnProperty("primary")) {
+    option.primary = "id";
+  }
+  if (!option.hasOwnProperty("children")) {
+    option.children = "children";
+  }
+  if (!option.hasOwnProperty("parent")) {
+    option.parent = "parent";
+  }
+
+  return flatten(array, option, null);
+}
+
+function flatten(array: any[], option: { [key: string]: any }, id: any): any[] {
+  const parent: string = `${option.parent}`;
+  const primary: string = `${option.primary}`;
+  const childrenField: string = `${option.children}`;
+  const res: any[] = [];
+  for (const v of array) {
+    const row: { [key: string]: any } = v as { [key: string]: any };
+    if (!row) {
+      continue;
+    }
+    if (!(row instanceof Object)) {
+      continue;
+    }
+    row[parent] = id;
+    const children: any[] = row[childrenField] as any[];
+    delete row[childrenField];
+    res.push(row);
+
+    if (children) {
+      res.push(...flatten(children, option, row[primary]));
+    }
+  }
+  return res;
 }

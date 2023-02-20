@@ -18,7 +18,9 @@ export enum FSSAPCE {
  *
  * let data = fs.ReadFile("/f1.txt"); // /data/app/data/f1.txt
  */
+
 export class FS {
+  [key: string]: any;
   space: FSSAPCE;
   isLocal: boolean;
   basePath: string;
