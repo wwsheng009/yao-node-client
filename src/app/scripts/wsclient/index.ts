@@ -1,4 +1,4 @@
-import { WebSocket } from "@/client";
+import { WebSocket } from "@/yao-node-proxy-client";
 
 /**
  * 发送通知

@@ -273,9 +273,40 @@ yao start
 pnpm run myscript
 ```
 
+## 单元测试
+
+设置单元测试(https://www.testim.io/blog/typescript-unit-testing-101/)
+
+安装必要的依赖
+
+```sh
+pnpm i -D jest ts-jest @types/jest
+```
+
+jest 测试配置 jest.config.js
+
+```js
+module.exports = {
+  transform: { "^.+\\.ts?$": "ts-jest" }, //告诉 Jest 使用 ts-jest 预处理器来编译 TypeScript 文件。
+  testEnvironment: "node", //告诉 Jest 在 Node 环境中运行测试。
+  testRegex: "/tests/.*\\.(test|spec)?\\.(ts|tsx)$", //指定了 Jest 用于识别测试文件的 regex。
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"], //这是 Jest 用于查找测试文件的文件扩展名数组。
+  coverageDirectory: "./coverage/", //这是 Jest 输出覆盖率信息的目录。
+  collectCoverage: true, //这表明 Jest 是否应该收集覆盖率信息
+};
+```
+
+更新 package.json
+
+```json
+"scripts":{
+  "test": "jest"
+}
+```
+
 ## 编译生成
 
-最后一步是把 ts 代码转换成 js 脚本。
+把 ts 代码转换成 js 脚本。
 
 tsc 编译使用配置 module:commonjs 会对编译后的 js 代码作了格式转换，这并不是我们想要的结果。所以在最后编译 yao js 脚本时需要把 tsc 参数 module 需要设置成 esnext 或是 es2020。生成的 js 文件格式是我们想要的。
 
@@ -287,24 +318,74 @@ tsc 编译使用配置 module:commonjs 会对编译后的 js 代码作了格式�
 pnpm run build_yao
 ```
 
+- 使用 rollup 打包，rollup 可以自动的优化代码，没有引用的代码不会引用。
+
+```sh
+pnpm i -D rollup
+
+#比较实用的插件
+pnpm i -D rimraf deepmerge
+
+# resolve
+pnpm i -D @rollup/plugin-node-resolve
+# commonjs
+pnpm i -D @rollup/plugin-commonjs
+# ts
+pnpm i -D @rollup/plugin-typescript
+# 别名
+pnpm i -D @rollup/plugin-alias
+# json 包含
+pnpm i -D @rollup/plugin-json
+```
+
+rollup 配置文件，配置文件中需要剔除对 yao-proxy 的引用。
+
+```js
+export default {
+  。。。
+  external: [/.*yao-node-proxy-client$/], //yao的代理客户端不要打包
+};
+```
+
+- 另外一个选择是使用 esbuild 进行合并，
+
+需要安装插件
+
+```sh
+pnpm i -D esbuild
+pnpm i -D esbuild-plugin-ignore
+pnpm i -D glob
+```
+
+配置构建脚本 build.mjs,在配置中输入需要外部引用的包名称
+
+```js
+esbuild
+  .build({
+      。。。
+      external: ["*/yao-node-proxy-client"],
+  }
+```
+
+```sh
+
+#使用参数
+"esbuild"：ts-node build.mjs -i scripts/rollup/index.js -o scripts/rollup/index.dist.js",
+
+pnpm run esbuild
+
+```
+
 - 在文件中注释对代理对象的引用
 
-```js
-//import { Process } from "../../client";
+使用脚本修正脚本中的引用 import 与导出 export
+
+```sh
+pnpm run fix:export
 ```
 
+- 注释 import 语句，yao 只支持单文件
 - 在文件中删除所有的 export 关键字
-
-```js
-//before
-export funtion foo(){
-
-}
-//after
-function foo(){
-
-}
-```
 
 - 把 dist/app 目录下的文件复制到 yao 应用的对应的目录下。
 
@@ -338,3 +419,5 @@ function foo(){
 
 services/scripts/studio 目录的脚本优先调用开发目录的对象，不会进行远程调用。
 比如 scripts/目录下有两个脚本 scripts/a.ts,scripts/b.ts,在 a.ts 调用 Process("scripts.b.fun1")时，会直接调用 scripts/b.ts 中的 fun1 函数
+
+## 打包

@@ -1,4 +1,4 @@
-import { $L } from "@/client";
+import { $L } from "@/yao-node-proxy-client";
 
 /**
  * Cloud Function

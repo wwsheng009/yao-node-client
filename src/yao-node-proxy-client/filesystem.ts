@@ -1,10 +1,12 @@
 import { RemoteRequest } from "./request";
 import fs from "fs";
-import os from "os";
 import path from "path";
-export type FSSAPCE = "system" | "script" | "dsl";
 import mime from "mime";
-
+export enum FSSAPCE {
+  System = "system",
+  Script = "script",
+  Dsl = "dsl",
+}
 /**
  * 使用 FS 对象实现文件操作。 Yao 提供 System, DSL, Script 三个空间,
  * System 用于应用数据操作,
@@ -20,6 +22,12 @@ export class FS {
   space: FSSAPCE;
   isLocal: boolean;
   basePath: string;
+  /**
+   * system	/data/app/data	应用数据
+   * dsl	/data/app	除 scripts 外的所有目录(仅 Studio 脚本可用)
+   * script	/data/app/scirpts	脚本目录(仅 Studio 脚本可用)
+   * @param space
+   */
   constructor(space: FSSAPCE) {
     this.space = space;
     if (process.env.YAO_APP_ROOT) {

@@ -1,13 +1,10 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "rootDir": "src",
+        "rootDir": "./src",
         "moduleResolution": "node",
         "baseUrl": "./",
         "paths": {
-            "@": [
-                "src"
-            ],
             "@/*": [
                 "src/*"
             ],
@@ -27,7 +24,12 @@
         "src/**/*.d.ts"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist",
+        "yao",
+        "server",
+        "data",
+        "tests"
     ],
     // NEW: Options for file/directory watching
     "watchOptions": {

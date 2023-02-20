@@ -30,7 +30,7 @@ function checkExtension(filePath: string) {
  * @param filename 文件名
  */
 function process(filename: string) {
-  const isJSFile = checkExtension("/path/to/file.js");
+  const isJSFile = checkExtension(filename);
   if (!isJSFile) {
     return;
   }
