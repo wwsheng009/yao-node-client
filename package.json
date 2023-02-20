@@ -26,7 +26,7 @@
     "yao:build": "rimraf dist_esm && tsc -p ./tsconfig-yao.json && tsc-alias -p ./tsconfig-yao.json",
     "yao:rollup": "rimraf yao && rollup -c rollup.config.mjs",
     "yao:fixed": "ts-node -r tsconfig-paths/register src/tools/clean_up.ts",
-    "yao:all": "pnpm run yao:build && pnpm run yao:rollup && pnpm run yao:fixed",
+    "yao:packup": "pnpm run yao:rollup && pnpm run yao:fixed",
     "clean:all": "rimraf dist && rimraf dist_esm && rimraf yao"
   },
   "keywords": [

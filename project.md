@@ -36,44 +36,7 @@ typescript 配置 tsconfig.json
 
 配置 vscode 编辑器的 launch.json
 
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "${file}",
-      "preLaunchTask": "tsc: build - tsconfig.json",
-      "cwd": "${workspaceFolder}",
-      "outFiles": [
-        //"sourceMap": true
-        "${workspaceFolder}/dist/**/*.js"
-      ]
-    }
-  ]
-}
-```
-
-vscode tasks.json
-
-```json
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "type": "npm",
-      "script": "build",
-      "group": "build",
-      "problemMatcher": [],
-      "label": "tsc: build - tsconfig.json",
-      "detail": "tsc"
-    }
-  ]
-}
-```
+配置 vscode 编辑器的 vscode tasks.json
 
 使用 rollup 打包
 
@@ -95,7 +58,7 @@ pnpm i -D @rollup/plugin-alias
 pnpm i -D @rollup/plugin-json
 ```
 
-重要,链接 yao-node-client
+重要,pnpm 链接 yao-node-client
 
 ```
 pnpm link --global yao-node-client
@@ -126,11 +89,14 @@ server/scripts/jsproxy.js
 package.json
 
 ```json
-"scripts": {
+  "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' -r tsconfig-paths/register src/app/scripts/myscript.ts",
     "run": "pnpm run build  && ts-node -r tsconfig-paths/register src/app/scripts/myscript.ts",
     "build": "tsc && tsc-alias",
     "build:watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
-
+    "yao:build": "rimraf dist_esm && tsc -p ./tsconfig-yao.json && tsc-alias -p ./tsconfig-yao.json",
+    "yao:rollup": "rimraf yao && rollup -c rollup.config.mjs",
+    "yao:fixed": "ts-node -r tsconfig-paths/register src/tools/clean_up.ts",
+    "yao:pack": "pnpm run yao:rollup && pnpm run yao:fixed"
   }
 ```

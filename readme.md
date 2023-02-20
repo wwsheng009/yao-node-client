@@ -259,6 +259,8 @@ pnpm run build_yao
 - 使用 rollup 打包，rollup 可以自动的优化代码，没有引用的代码不会引用。
 
 ```sh
+pnpm i -D glob
+
 pnpm i -D rollup
 
 #比较实用的插件
@@ -294,7 +296,7 @@ export default {
 ```sh
 pnpm i -D esbuild
 pnpm i -D esbuild-plugin-ignore
-pnpm i -D glob
+
 ```
 
 配置构建脚本 build.mjs,在配置中输入需要外部引用的包名称
@@ -398,3 +400,9 @@ tsconfig.json 设置`module:ESNext`也不影响操作，对调试会有影响，
 
 在 项目 A 的根目录下使用 pnpm unlink --global 命令解除项目与全局的关联。
 在 项目 B 的根目录下使用 pnpm unlink yao-node-client 命令解除项目与本地 npm 包的关联。
+
+### 目录
+
+- dist 开发 ts 时自动生成 commonjs 调试时用的，nodejs 并不直接支持 esm。
+- dist_esm 目录是生成 esm 目录时用的，生成 yao 需要的 js 格式。
+- yao 是 rollup 打包生成文件后用的，合并多个文件，如果 dist_esm/src/app 目录下有 index.js，会自动的合并到对应的目录/yao/app 下。
