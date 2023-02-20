@@ -1,4 +1,4 @@
-import { $L } from "@/yao-node-proxy-client";
+import { $L, Studio } from "@/yao-node-proxy-client";
 
 /**
  * Cloud Function
@@ -20,4 +20,8 @@ function testWorld() {
   let res = World(["hello", "world"]);
   console.log(res);
 }
-testWorld();
+function callHub() {
+  let rest = Studio("test.Hub", "hello");
+  console.log(rest);
+}
+callHub();

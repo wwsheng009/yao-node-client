@@ -420,4 +420,27 @@ pnpm run fix:export
 services/scripts/studio 目录的脚本优先调用开发目录的对象，不会进行远程调用。
 比如 scripts/目录下有两个脚本 scripts/a.ts,scripts/b.ts,在 a.ts 调用 Process("scripts.b.fun1")时，会直接调用 scripts/b.ts 中的 fun1 函数
 
-## 打包
+## 在 vscode 调试 esm 模块的第二种方法
+
+设置 node 的运行参数,在 launch.json 配置文件里设置 `runtimeArgs -r esm` ,node 可以调用 esm 模块，但是在调试中 console.log 失效，无法显示内容,需要设置另外一个参数`"console": "integratedTerminal"`,
+
+.vscode/launch.json
+
+```json
+"preLaunchTask": "tsc: build",
+"console": "integratedTerminal",
+"runtimeArgs": [
+            "-r",
+            "esm"
+           ]
+```
+
+tsconfig.json 设置`module:ESNext`也不影响操作，对调试会有影响，加了中间层，断点会进入 esm 模块。
+
+```
+"compilerOptions": {
+    "module": "ESNext",
+    "sourceMap": true,
+    "outDir": "dist",
+  }
+```
