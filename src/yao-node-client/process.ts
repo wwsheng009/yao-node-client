@@ -55,7 +55,17 @@ export function Process(method: string, ...args: any[]) {
     return CallLocalProcess(obj.fpath, obj.method, ...args);
   }
   let process = method.toLowerCase();
-  if (["utils.str.concat", "xiang.helper.StrConcat"].includes(process)) {
+
+  if (
+    ["xiang.sys.print", "xiang.helper.print", "utils.fmt.print"].includes(
+      process
+    )
+  ) {
+    console.log(JSON.stringify(args));
+    return;
+  }
+
+  if (["utils.str.concat", "xiang.helper.strconcat"].includes(process)) {
     return args.join("");
   }
   if ("utils.str.join" == process) {
@@ -70,6 +80,11 @@ export function Process(method: string, ...args: any[]) {
     var waitTill = new Date(new Date().getTime() + args[0]);
     while (waitTill > new Date()) {}
   }
+  // encoding
+  if (method.startsWith("encoding.")) {
+    return processEncoding(method, ...args);
+  }
+
   // Time
   if (method.startsWith("utils.now")) {
     return processTime(method, ...args);
@@ -90,6 +105,49 @@ export function Process(method: string, ...args: any[]) {
     method.startsWith("xiang.helper.array")
   ) {
     return processArry(method, ...args);
+  }
+  return RemoteRequest({ type: "Process", method: method, args });
+}
+
+// Convert a hex string to a byte array
+function hexToBytes(hex: string) {
+  for (var bytes = [], c = 0; c < hex.length; c += 2) {
+    bytes.push(parseInt(hex.slice(c, c + 2), 16));
+  }
+  return bytes;
+}
+
+// Convert a byte array to a hex string
+function bytesToHex(bytes: number[]) {
+  for (var hex = [], i = 0; i < bytes.length; i++) {
+    const current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+    hex.push((current >>> 4).toString(16));
+    hex.push((current & 0xf).toString(16));
+  }
+  return hex.join("");
+}
+
+function processEncoding(method: string, ...args: any[]) {
+  const process = method.toLowerCase();
+  if ("encoding.hex.encode" == process) {
+    return bytesToHex(args[0]);
+  }
+  if ("encoding.hex.decode" == process) {
+    return hexToBytes(args[0]);
+  }
+  if ("encoding.json.encode" == process) {
+    return JSON.stringify(args[0]);
+  }
+  if ("encoding.json.decode" == process) {
+    return JSON.parse(args[0]);
+  }
+  if ("encoding.base64.encode" == process) {
+    let buff = Buffer.from(args[0]);
+    return buff.toString("base64");
+  }
+  if ("encoding.base64.decode" == process) {
+    let buff = Buffer.from(args[0], "base64");
+    return buff.toString();
   }
   return RemoteRequest({ type: "Process", method: method, args });
 }

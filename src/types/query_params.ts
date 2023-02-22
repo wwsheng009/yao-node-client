@@ -1,5 +1,5 @@
 /**QueryOrder Order 查询排序 */
-interface QueryOrder {
+export interface QueryOrder {
   rel?: string;
   column: string;
   option?: string;
@@ -7,7 +7,7 @@ interface QueryOrder {
 /**
  *  QueryWhere Where 查询条件
  */
-interface QueryWhere {
+export interface QueryWhere {
   /**Relation Name */
   rel?: string;
   column?: string;
@@ -31,11 +31,11 @@ export interface QueryParam {
   limit?: number;
   page?: number;
   pagesize?: number;
-  withs: Map<string, With>;
+  withs?: { [key: string]: QueryWith }; //Map<string, QueryWith>;
 }
 
 /**With relations 关联查询 */
-interface With {
+export interface QueryWith {
   name: string;
   query: QueryParam;
 }
