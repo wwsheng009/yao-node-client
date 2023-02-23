@@ -1,6 +1,6 @@
 // require("dotenv").config();
 
-import { Process, Query } from "@/index";
+import { Process, Query } from "@/yao-node-client";
 
 function testProcess() {
   const info = Process("utils.app.Inspect");
@@ -20,4 +20,4 @@ function testQuery() {
   const res = qb.Run(ql);
   console.log(res);
 }
-testQuery();
+export default { testQuery };

@@ -32,21 +32,21 @@ export class FS {
    */
   constructor(space: FSSAPCE) {
     this.space = space;
-    if (process.env.YAO_APP_ROOT) {
-      const isValidPath = fs.existsSync(process.env.YAO_APP_ROOT);
+    let yao_app_root = process.env.YAO_APP_ROOT;
+    if (typeof yao_app_root === "string") {
+      yao_app_root = path.resolve(yao_app_root);
+      const isValidPath = fs.existsSync(yao_app_root);
       if (isValidPath) {
         this.isLocal = true;
         switch (this.space) {
           case "system":
-            this.basePath =
-              process.env.YAO_APP_ROOT + path.sep + "data" + path.sep;
+            this.basePath = path.join(yao_app_root, "data", path.sep);
             break;
           case "script":
-            this.basePath =
-              process.env.YAO_APP_ROOT + path.sep + "scripts" + path.sep;
+            this.basePath = path.join(yao_app_root, "scripts", path.sep);
             break;
           case "dsl":
-            this.basePath = process.env.YAO_APP_ROOT + path.sep;
+            this.basePath = path.join(yao_app_root, path.sep);
             break;
           default:
             this.isLocal = false;
@@ -55,9 +55,9 @@ export class FS {
       }
     }
   }
-  ReadFile(src: string) {
+  ReadFile(src: string): string {
     if (this.isLocal) {
-      return fs.readFileSync(src, "utf8");
+      return fs.readFileSync(path.join(this.basePath, src), "utf8");
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -65,9 +65,9 @@ export class FS {
       args: [src],
     });
   }
-  ReadFileBuffer(src: string) {
+  ReadFileBuffer(src: string): Buffer {
     if (this.isLocal) {
-      return fs.readFileSync(src);
+      return fs.readFileSync(path.join(this.basePath, src));
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -77,7 +77,7 @@ export class FS {
   }
   WriteFile(src: string, str: any, mode?: number) {
     if (this.isLocal) {
-      return fs.writeFileSync(this.basePath + src, str, { mode });
+      return fs.writeFileSync(path.join(this.basePath, src), str, { mode });
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -85,9 +85,13 @@ export class FS {
       args: [src, str, mode],
     });
   }
-  WriteFileBuffer(src: string, buffer: any, mode?: number) {
+  WriteFileBuffer(
+    src: string,
+    buffer: string | NodeJS.ArrayBufferView,
+    mode?: number
+  ) {
     if (this.isLocal) {
-      return fs.writeFileSync(this.basePath + src, buffer, { mode });
+      return fs.writeFileSync(path.join(this.basePath, src), buffer, { mode });
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -95,12 +99,12 @@ export class FS {
       args: [src, buffer, mode],
     });
   }
-  ReadDir(src: string, recursive?: boolean) {
+  ReadDir(src: string, recursive?: boolean): string[] {
     if (this.isLocal) {
       if (recursive) {
-        return readDirAll(this.basePath + src);
+        return readDirAll(path.join(this.basePath, src));
       } else {
-        return readDir(this.basePath + src);
+        return readDir(path.join(this.basePath, src));
       }
     }
     return RemoteRequest({
@@ -111,7 +115,7 @@ export class FS {
   }
   Mkdir(src: string, mode?: number) {
     if (this.isLocal) {
-      return fs.mkdirSync(this.basePath + src, { mode });
+      return fs.mkdirSync(path.join(this.basePath, src), { mode });
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -125,9 +129,12 @@ export class FS {
    * @param mode 目录权限
    * @returns
    */
-  MkdirAll(src: string, mode?: number) {
+  MkdirAll(src: string, mode?: number): string {
     if (this.isLocal) {
-      return fs.mkdirSync(this.basePath + src, { recursive: true, mode });
+      return fs.mkdirSync(path.join(this.basePath, src), {
+        recursive: true,
+        mode,
+      });
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -141,10 +148,10 @@ export class FS {
    * @param pattern 指定临时目录的前缀
    * @returns 创建的临时目录的路径
    */
-  MkdirTemp(src: string, pattern?: string) {
+  MkdirTemp(src: string, pattern?: string): string {
     if (this.isLocal) {
-      fs.mkdirSync(this.basePath + src, { recursive: true });
-      let newpath = path.join(this.basePath + src, pattern);
+      fs.mkdirSync(path.join(this.basePath, src), { recursive: true });
+      let newpath = path.join(path.join(this.basePath, src), pattern);
       return fs.mkdtempSync(newpath);
     }
     return RemoteRequest({
@@ -153,9 +160,9 @@ export class FS {
       args: [src, pattern],
     });
   }
-  Exists(src: string) {
+  Exists(src: string): boolean {
     if (this.isLocal) {
-      return fs.existsSync(this.basePath + src);
+      return fs.existsSync(path.join(this.basePath, src));
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -163,9 +170,9 @@ export class FS {
       args: [src],
     });
   }
-  IsDir(src: string) {
+  IsDir(src: string): boolean {
     if (this.isLocal) {
-      const stat = fs.statSync(this.basePath + src);
+      const stat = fs.statSync(path.join(this.basePath, src));
       return stat.isDirectory();
     }
     return RemoteRequest({
@@ -174,9 +181,9 @@ export class FS {
       args: [src],
     });
   }
-  IsFile(src: string) {
+  IsFile(src: string): boolean {
     if (this.isLocal) {
-      const stat = fs.statSync(this.basePath + src);
+      const stat = fs.statSync(path.join(this.basePath, src));
       return stat.isFile();
     }
     return RemoteRequest({
@@ -185,9 +192,9 @@ export class FS {
       args: [src],
     });
   }
-  Remove(src: string) {
+  Remove(src: string): void {
     if (this.isLocal) {
-      rmoveLocal(src);
+      rmoveLocal(path.join(this.basePath, src));
       return;
     }
     return RemoteRequest({
@@ -196,9 +203,9 @@ export class FS {
       args: [src],
     });
   }
-  RemoveAll(src: string) {
+  RemoveAll(src: string): void {
     if (this.isLocal) {
-      rmoveLocal(src);
+      rmoveLocal(path.join(this.basePath, src));
       return;
     }
     return RemoteRequest({
@@ -207,9 +214,9 @@ export class FS {
       args: [src],
     });
   }
-  Chmod(src: string, mode: number) {
+  Chmod(src: string, mode: number): void {
     if (this.isLocal) {
-      return fs.chmodSync(this.basePath + src, mode);
+      return fs.chmodSync(path.join(this.basePath, src), mode);
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -217,9 +224,9 @@ export class FS {
       args: [src, mode],
     });
   }
-  BaseName(src: string) {
+  BaseName(src: string): string {
     if (this.isLocal) {
-      return path.basename(this.basePath + src);
+      return path.basename(path.join(this.basePath, src));
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -227,9 +234,9 @@ export class FS {
       args: [src],
     });
   }
-  DirName(src: string) {
+  DirName(src: string): string {
     if (this.isLocal) {
-      return path.dirname(this.basePath + src);
+      return path.dirname(path.join(this.basePath, src));
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -237,9 +244,9 @@ export class FS {
       args: [src],
     });
   }
-  ExtName(src: string) {
+  ExtName(src: string): string {
     if (this.isLocal) {
-      return path.extname(this.basePath + src);
+      return path.extname(path.join(this.basePath, src));
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -247,9 +254,9 @@ export class FS {
       args: [src],
     });
   }
-  MimeType(src: string) {
+  MimeType(src: string): string {
     if (this.isLocal) {
-      return mime.getType(this.basePath + src);
+      return mime.getType(path.join(this.basePath, src));
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -257,9 +264,9 @@ export class FS {
       args: [src],
     });
   }
-  Mode(src: string) {
+  Mode(src: string): number {
     if (this.isLocal) {
-      const stat = fs.statSync(this.basePath + src);
+      const stat = fs.statSync(path.join(this.basePath, src));
       return stat.mode;
     }
     return RemoteRequest({
@@ -268,9 +275,9 @@ export class FS {
       args: [src],
     });
   }
-  Size(src: string) {
+  Size(src: string): number {
     if (this.isLocal) {
-      const stat = fs.statSync(this.basePath + src);
+      const stat = fs.statSync(path.join(this.basePath, src));
       return stat.size;
     }
     return RemoteRequest({
@@ -279,9 +286,9 @@ export class FS {
       args: [src],
     });
   }
-  ModTime(src: string) {
+  ModTime(src: string): Date {
     if (this.isLocal) {
-      const stat = fs.statSync(this.basePath + src);
+      const stat = fs.statSync(path.join(this.basePath, src));
       return stat.mtime;
     }
     return RemoteRequest({
@@ -290,9 +297,12 @@ export class FS {
       args: [src],
     });
   }
-  Copy(src: string, target: string) {
+  Copy(src: string, target: string): void {
     if (this.isLocal) {
-      return localCopy(this.basePath + src, this.basePath + target);
+      return localCopy(
+        path.join(this.basePath, src),
+        path.join(this.basePath, target)
+      );
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -300,10 +310,10 @@ export class FS {
       args: [src, target],
     });
   }
-  Move(src: string, target: string) {
+  Move(src: string, target: string): void {
     if (this.isLocal) {
-      const old = this.basePath + src;
-      const newPath = this.basePath + target;
+      const old = path.join(this.basePath, src);
+      const newPath = path.join(this.basePath, target);
       return fs.renameSync(old, newPath);
     }
     return RemoteRequest({
@@ -313,6 +323,7 @@ export class FS {
     });
   }
 }
+
 function readDir(dir: string) {
   let files: string[] = [];
   fs.readdirSync(dir).forEach((file) => {
@@ -321,6 +332,12 @@ function readDir(dir: string) {
   });
   return files;
 }
+
+/**
+ * 读取目录下所有的文件列表，包含子目录
+ * @param dir 目录
+ * @returns 目录所有的文件列表，包含子目录
+ */
 function readDirAll(dir: string) {
   let files: string[] = [];
   const readDirRecursive = (dir: string) => {
@@ -337,11 +354,10 @@ function readDirAll(dir: string) {
 }
 
 function rmoveLocal(src: string) {
-  const srcPath = this.basePath + src;
+  const srcPath = path.join(this.basePath, src);
   const stat = fs.statSync(srcPath);
   if (stat.isDirectory()) {
     const files = fs.readdirSync(srcPath);
-
     files.forEach((file) => {
       fs.unlinkSync(`${path}${path.sep}${file}`);
     });
@@ -349,6 +365,7 @@ function rmoveLocal(src: string) {
     fs.unlinkSync(srcPath);
   }
 }
+
 function localCopy(src: string, target: string) {
   const stat = fs.statSync(src);
   if (!stat.isDirectory()) {

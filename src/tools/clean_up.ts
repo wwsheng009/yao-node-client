@@ -52,6 +52,8 @@ function processComment(filename: string) {
     } else if (line.startsWith("export function")) {
       lines[index] = line.slice("export ".length);
       needProcess = true;
+    } else if (/ProcessEnum\.([\._\-a-zA-Z]*)/.test(line)) {
+      lines[index] = line.replace(/ProcessEnum\.([\._\-a-zA-Z]*)/, `"$1"`);
     }
     //other case
   }

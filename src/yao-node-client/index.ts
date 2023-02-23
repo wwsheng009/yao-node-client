@@ -12,3 +12,5 @@ export {
   QueryWhere,
   QueryWith,
 } from "../types/query_params";
+
+export * from "../types/process";

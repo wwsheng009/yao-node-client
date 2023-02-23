@@ -1,0 +1,2 @@
+/**`{"model":"<Model Widget ID>", "label":"<label 字段名称(可选,默认name)>", "value":"<value 字段名称(可选,默认id)>" "wheres":[...<查询条件(可选)>], "limit":"<返回记录数量(可选, 默认500)>"}`|`<Select组件 props.options 数组>`|返回 Select 组件 `Options` [示例](#selectoptions)|*/
+SelectOptions = "yao.component.SelectOptions",

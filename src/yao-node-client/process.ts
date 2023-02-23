@@ -1,4 +1,4 @@
-import { CallLocalProcess } from "./localcall";
+import { CallLocalProcess, GetFileName } from "./localcall";
 import RemoteRequest from "./request";
 import fs from "fs";
 import path from "path";
@@ -14,33 +14,37 @@ import {
   ArrayMapSetMapStr,
 } from "./array";
 
-export function CheckIsLocalProcessFilePath(name: string) {
-  let paths = name.split(".");
-  //有一些内部的process,比如Concat
-  if (!paths || !paths.length) {
-    return false;
-  }
-  if (!["scripts"].includes(paths[0])) {
-    //不代理
-    return false;
-  }
+// export function CheckIsLocalProcessFilePath(name: string) {
+//   let paths = name.split(".");
+//   //有一些内部的process,比如Concat
+//   if (!paths || !paths.length) {
+//     return false;
+//   }
+//   if (!["scripts"].includes(paths[0])) {
+//     //不代理
+//     return false;
+//   }
 
-  if (paths.length < 2) {
-    throw Error("错误的流程名称");
-  }
-  const tokens = paths.splice(-1, 1);
+//   if (paths.length < 2) {
+//     throw Error("错误的流程名称");
+//   }
+//   const tokens = paths.splice(-1, 1);
 
-  const method = tokens[0];
-  const fname = paths.join(path.sep);
-  // console.log(tokens, paths);
+//   const method = tokens[0];
+//   const fname = paths.join(path.sep);
+//   // console.log(tokens, paths);
 
-  const filePath = `dist/app/${fname}.js`;
-  const fpath = path.resolve(filePath);
-  if (!fs.existsSync(fpath)) {
-    return false;
-  }
-  return { fpath, method };
-}
+//   let filePath = `dist/app/${fname}.js`;
+//   let fpath = path.resolve(filePath);
+//   if (!fs.existsSync(fpath)) {
+//     filePath = `dist/app/${fname}/index.js`;
+//     fpath = path.resolve(filePath);
+//     if (!fs.existsSync(fpath)) {
+//       return false;
+//     }
+//   }
+//   return { fpath, method };
+// }
 
 /**
  * YAO Process处理器代理
@@ -49,10 +53,9 @@ export function CheckIsLocalProcessFilePath(name: string) {
  * @returns
  */
 export function Process(method: string, ...args: any[]) {
-  // if (method.startsWith("scripts.")) {
-  let obj = CheckIsLocalProcessFilePath(method);
-  if (obj) {
-    return CallLocalProcess(obj.fpath, obj.method, ...args);
+  let fname = GetFileName(method);
+  if (fname) {
+    return CallLocalProcess(fname, method, ...args);
   }
   let process = method.toLowerCase();
 
