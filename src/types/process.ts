@@ -225,7 +225,7 @@ export namespace ProcessEnum {
   /**
    * HTTP 请求处理器
    */
-  export enum HTTP {
+  export enum http {
     /**`[<URL>, <Query (可选)>, <Headers (可选)>]`|响应结果|发送 HTTP GET 请求|*/
     Get = "http.Get",
     /**`[<URL>, <Payload (可选)>, <Files (可选)>, <Query(可选)>, <Headers (可选)>]`|响应结果|发送 HTTP POST 请求|*/
@@ -433,21 +433,21 @@ export namespace ProcessEnum {
     /**`[<算法>, <Source>, <Key>, <Encoding(可选)>]`|HMAC Hash String|HAMC Hash|*/
     Hmac = "crypto.Hmac",
   }
-  /**
-   * 内建 Compute 处理器。在 Table, Form, Chart, 等 Widget 中使用时,可忽略命名空间, 填写处理器名称即可
-   */
-  export enum compute {
-    /**`[<字符串参数>]`|`<字符串参数>`|读取数值|*/
-    Get = "Get",
-    /**`[<字符串参数>]`||过滤首尾空格|*/
-    Trim = "Trim",
-    /**`[...<字符串参数>]`|`"value1value2.."`|连接字符串|*/
-    Concat = "Concat",
-    /**`[]`|`""` 空字符串|返回空字符串|*/
-    Hide = "Hide",
-    /**||将路径转换为下载地址|*/
-    Download = "Download",
-    /**||将下载地址转换为路径|*/
-    Upload = "Upload",
-  }
+  // /**
+  //  * 内建 Compute 处理器。在 Table, Form, Chart, 等 Widget 中使用时,可忽略命名空间, 填写处理器名称即可
+  //  */
+  // export enum compute {
+  //   /**`[<字符串参数>]`|`<字符串参数>`|读取数值|*/
+  //   Get = "Get",
+  //   /**`[<字符串参数>]`||过滤首尾空格|*/
+  //   Trim = "Trim",
+  //   /**`[...<字符串参数>]`|`"value1value2.."`|连接字符串|*/
+  //   Concat = "Concat",
+  //   /**`[]`|`""` 空字符串|返回空字符串|*/
+  //   Hide = "Hide",
+  //   /**||将路径转换为下载地址|*/
+  //   Download = "Download",
+  //   /**||将下载地址转换为路径|*/
+  //   Upload = "Upload",
+  // }
 }
