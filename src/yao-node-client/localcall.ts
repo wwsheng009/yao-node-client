@@ -58,10 +58,11 @@ export function GetFileName(name: string) {
   let filePath = path.join(prefix, `${fname}.js`);
   let fpath = path.resolve(filePath);
   if (!fs.existsSync(fpath)) {
+    console.log(`info:本地process文件不存在:${fname}`);
     filePath = path.join(prefix, fname, "index.js"); // `dist/app/${fname}/index.js`;
     fpath = path.resolve(filePath);
     if (!fs.existsSync(fpath)) {
-      console.log(`文件不存在${fpath}`);
+      console.log(`info:本地process文件不存在:${fname}/index.js`);
       return;
     }
   }
