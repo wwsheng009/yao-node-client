@@ -1,14 +1,14 @@
 import fetch from "sync-fetch";
 
 let apiKey = ""; //process.env.YAO_API_KEY;
-let proxyServerUrl = ""; //process.env.YAO_PROXY_SERVER_URL; //"http://localhost:5199/api/proxy/call";
+let proxyServerUrl = ""; //process.env.YAO_APP_PROXY_ENDPOINT; //"http://localhost:5199/api/proxy/call";
 
 require("dotenv").config();
 if (process.env.YAO_API_KEY) {
   apiKey = process.env.YAO_API_KEY;
 }
-if (process.env.YAO_PROXY_SERVER_URL) {
-  proxyServerUrl = process.env.YAO_PROXY_SERVER_URL;
+if (process.env.YAO_APP_PROXY_ENDPOINT) {
+  proxyServerUrl = process.env.YAO_APP_PROXY_ENDPOINT;
 }
 
 export function RemoteRequest(payload: {
@@ -21,7 +21,7 @@ export function RemoteRequest(payload: {
   message?: string;
 }) {
   if (!proxyServerUrl || !proxyServerUrl.length) {
-    throw new Error("代理地址为空，请配置环境变量YAO_PROXY_SERVER_URL");
+    throw new Error("代理地址为空，请配置环境变量YAO_APP_PROXY_ENDPOINT");
   }
   const es = fetch(proxyServerUrl, {
     headers: {
