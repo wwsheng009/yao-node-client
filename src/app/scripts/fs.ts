@@ -1,6 +1,6 @@
 import { FS, FSSAPCE } from "../../yao-node-client/filesystem";
 function createTemp() {
-  const fs1 = new FS(FSSAPCE.System);
+  const fs1 = new FS(FSSAPCE.system);
   fs1.MkdirTemp("test", "test-*");
 }
 

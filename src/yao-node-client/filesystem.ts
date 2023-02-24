@@ -3,9 +3,9 @@ import fs from "fs";
 import path from "path";
 import mime from "mime";
 export enum FSSAPCE {
-  System = "system",
-  Script = "script",
-  Dsl = "dsl",
+  system = "system",
+  script = "script",
+  dsl = "dsl",
 }
 /**
  * 使用 FS 对象实现文件操作。 Yao 提供 System, DSL, Script 三个空间,
@@ -21,7 +21,7 @@ export enum FSSAPCE {
 
 export class FS {
   // [key: string]: any;
-  space: FSSAPCE;
+  space: FSSAPCE | "system" | "dsl" | "script";
   isLocal: boolean;
   basePath: string;
   /**
@@ -30,7 +30,10 @@ export class FS {
    * script	/data/app/scirpts	脚本目录(仅 Studio 脚本可用)
    * @param space
    */
-  constructor(space: FSSAPCE) {
+  constructor(space: FSSAPCE | "system" | "dsl" | "script") {
+    if (!space) {
+      throw Error(`文件操作需要指定一个参数:"system" | "dsl" | "script"`);
+    }
     this.space = space;
     let yao_app_root = process.env.YAO_APP_ROOT;
     if (typeof yao_app_root === "string") {
