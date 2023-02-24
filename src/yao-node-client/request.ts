@@ -32,16 +32,10 @@ export function RemoteRequest(payload: {
     body: JSON.stringify(payload),
   });
   let ret = es.json();
-  if (ret.code && ret.message) {
+  if (ret.code != 200) {
     throw Error(`远程程序执行异常:代码:${ret.code},消息：${ret.message}`);
   }
-  if (ret.data) {
-    return ret.data;
-  } else {
-    if (ret.error) {
-      throw Error(ret.error);
-    }
-  }
+  return ret.data;
 }
 
 export default RemoteRequest;

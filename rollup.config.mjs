@@ -1,12 +1,9 @@
 import path from "node:path";
-// import typescript from "@rollup/plugin-typescript";
+import typescript from "@rollup/plugin-typescript";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import alias from "@rollup/plugin-alias";
 import json from "@rollup/plugin-json";
-
-import glob from "glob";
-import { fileURLToPath } from "node:url";
 
 const __dirname = path.resolve();
 
@@ -14,23 +11,11 @@ const __dirname = path.resolve();
 // console.log(process.env.TEST);
 
 export default {
-  input: Object.fromEntries(
-    glob
-      .sync("dist_esm/app/**/index.js")
-      .map((file) => [
-        path.relative(
-          "dist_esm/app",
-          file.slice(0, file.length - path.extname(file).length)
-        ),
-        fileURLToPath(new URL(file, import.meta.url)),
-      ])
-  ),
+  input: "./src/index.ts",
   output: {
-    // file: "./dist/app/scripts/rollup/index.esm.js",
-    // format: "esm",
-    sourcemap: false,
-    format: "es",
-    dir: "yao/app",
+    file: "./dist/yao-node-client.bound.esm.js",
+    sourcemap: true,
+    format: "cjs",
   },
 
   plugins: [
@@ -41,12 +26,12 @@ export default {
       entries: [
         {
           find: "@",
-          replacement: path.resolve(__dirname, "dist"),
+          replacement: path.resolve(__dirname, "src"),
         },
       ],
     }),
-    // typescript({ module: "esnext" }),
+    typescript({ module: "commonjs" }),
     commonjs({ include: "node_modules/**" }),
   ],
-  external: [/.*yao-node-client$/], //yao的代理客户端不要打包
+  external: [], //yao的代理客户端不要打包
 };

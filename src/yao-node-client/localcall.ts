@@ -19,7 +19,7 @@ export function CallLocalProcess(
   const method = GetMethodName(name);
   const module = require(fpath);
   if (!module[method]) {
-    throw Error("调用的方法不存在或没有导出");
+    throw Error(`流程：${name}，调用的方法：${method}不存在或没有导出！`);
   }
   return module[method](...params);
 }
@@ -48,19 +48,20 @@ export function GetFileName(name: string) {
     return;
   }
   paths.splice(-1, 1);
-  let prefix = path.join("dist", "app");
-  let config = process.env.LOCAL_DIST_APP_ROOT;
-  if (typeof config === "string") {
-    prefix = config;
+  let dir = path.join("dist", "app");
+
+  if (process.env.LOCAL_SCRIPT_DIST_ROOT) {
+    dir = process.env.LOCAL_SCRIPT_DIST_ROOT;
   }
+  //脚本路径
   let fname = paths.join(path.sep);
 
-  let filePath = path.join(prefix, `${fname}.js`);
+  let filePath = path.join(dir, `${fname}.js`);
   let fpath = path.resolve(filePath);
   if (!fs.existsSync(fpath)) {
     console.log(`info:本地process文件不存在:${fname}`);
     console.log(`info:本地process文件不存在:${fpath}`);
-    filePath = path.join(prefix, fname, "index.js"); // `dist/app/${fname}/index.js`;
+    filePath = path.join(dir, fname, "index.js"); // `dist/app/${fname}/index.js`;
     fpath = path.resolve(filePath);
     if (!fs.existsSync(fpath)) {
       console.log(`info:本地process文件不存在:${fname}/index.js`);

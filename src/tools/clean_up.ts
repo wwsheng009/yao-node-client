@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 import path from "node:path";
 
 function getFiles(dir: string) {
@@ -53,7 +53,9 @@ function processComment(filename: string) {
       lines[index] = line.slice("export ".length);
       needProcess = true;
     } else if (/ProcessEnum\.([\._\-a-zA-Z]*)/.test(line)) {
-      lines[index] = line.replace(/ProcessEnum\.([\._\-a-zA-Z]*)/, `"$1"`);
+      lines[index] = line.replaceAll(/ProcessEnum\.([\._\-a-zA-Z]*)/g, `"$1"`);
+    } else if (line.indexOf("process.env.") > -1) {
+      lines[index] = line.replaceAll("process.env.", "$ENV.");
     }
     //other case
   }

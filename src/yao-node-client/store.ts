@@ -1,10 +1,11 @@
+// Query Declaration
+
 import RemoteRequest from "./request";
 
-// Query Declaration
 /**
  * Store 使用缓存
  */
-class Store {
+export class Store {
   space: string;
   /**
    *
@@ -42,32 +43,3 @@ class Store {
     });
   }
 }
-
-/**
- * Exception
- */
-class Exception extends Error {
-  code: number;
-  constructor(message: string, code: number) {
-    super(`code:${code},message:${message}`);
-    this.name = "Exception";
-    this.message = message;
-    this.code = code;
-  }
-}
-
-/**
- * 翻译文本
- * @param args 文本
- * @returns
- */
-function $L(args: string) {
-  const payload = {
-    type: "Translate",
-    method: "",
-    message: args,
-  };
-  return RemoteRequest(payload);
-}
-
-export { Store, Exception, $L };
