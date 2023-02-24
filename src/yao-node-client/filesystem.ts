@@ -20,7 +20,7 @@ export enum FSSAPCE {
  */
 
 export class FS {
-  [key: string]: any;
+  // [key: string]: any;
   space: FSSAPCE;
   isLocal: boolean;
   basePath: string;

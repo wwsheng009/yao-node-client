@@ -3,7 +3,7 @@ import RemoteRequest from "./request";
 /**
  * 日志对象
  */
-export const log: { [id: string]: Function } = {
+export const log = {
   Trace(format: string, ...args: any[]) {
     const payload = {
       type: "Log",

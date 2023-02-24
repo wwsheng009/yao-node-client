@@ -1,54 +1,20 @@
 import esbuild from "esbuild";
+import yargs from "yargs/yargs";
+import { hideBin } from "yargs/helpers";
 
-/**
- * 把用户脚本输入参数转换成为字典，需要的格式是key=value
- * @param args 脚本输入参数
- * @returns
- */
-const parseArgs = (args: any[]) => {
-  let parsedArgs: {
-    [id: string]: string;
-  } = {};
+const argv = yargs(hideBin(process.argv))
+  .options({
+    input: { alias: "i", type: "string", default: "dist_esm/client/index.js" },
+    output: {
+      alias: "o",
+      type: "string",
+      default: "dist_esm/client/index.dist_esm.js",
+    },
+  })
+  .parseSync();
 
-  args.forEach((arg: string) => {
-    const parts = arg.split("=");
-    // parsedArgs.set(parts[0], parts[1]);
-    parsedArgs[parts[0]] = parts[1];
-  });
-
-  return parsedArgs;
-};
-const args = parseArgs(process.argv.slice(2));
-
-function getFlag(param: string) {
-  const flag = process.argv.indexOf(param) > -1 ? true : false;
-  return flag;
-}
-function getParams(param: string) {
-  const inputIndex = process.argv.indexOf(param) || process.argv.indexOf(param);
-  let inputValue = "";
-
-  if (inputIndex > -1) {
-    inputValue = process.argv[inputIndex + 1];
-  }
-  return inputValue;
-}
-
-let input = args["input"] || getParams("-i") || getParams("--input");
-// let input = args.get("input") || getParams("-i") || getParams("--input");
-if (!input) {
-  input = "dist_esm/client/index.js";
-} else {
-  input = "dist_esm/app/" + input;
-}
-
-// let output = args.get("output") || getParams("-o") || getParams("--output");
-let output = args["output"] || getParams("-o") || getParams("--output");
-if (!output) {
-  output = "dist_esm/client/index.dist_esm.js";
-} else {
-  output = "dist_esm/app/" + output;
-}
+let input = argv.input;
+let output = argv.output;
 
 esbuild
   .build({

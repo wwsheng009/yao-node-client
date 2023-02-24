@@ -4,7 +4,7 @@ import type { YaoQuery } from "../types/query_dsl";
  * Yao Query 查询引擎代理
  */
 export class Query {
-  [key: string]: any;
+  // [key: string]: any;
   /**
    * 执行查询并返回数据记录集合
    *

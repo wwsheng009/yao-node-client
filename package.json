@@ -1,12 +1,16 @@
 {
   "name": "yao-node-client",
   "version": "1.0.0",
-  "description": "yao proxy client for node development",
+  "description": "A node client for yao application development",
   "type": "commonjs",
-  "main": "dist/yao-node-client/index.js",
-  "types": "dist/yao-node-client/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wwsheng009/yao-node-client.git"
+  },
   "files": [
-    "dist_esm",
+    "dist",
     "LICENSE",
     "README.md",
     "package.json"
@@ -16,7 +20,7 @@
     "run": "pnpm run build  && ts-node -r tsconfig-paths/register src/app/scripts/myscript.ts",
     "build": "rimraf dist && tsc && tsc-alias",
     "build:watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
-    "esbuild:comp": "ts-node src/tools/esbuild.ts -i dist_esm/app/scripts/rollup/index.js -o dist_esm/app/scripts/rollup/index.dist.js",
+    "esbuild:comp": "ts-node src/tools/esbuild.ts -i dist_esm/app/scripts/rollup/index.js --output dist_esm/app/scripts/rollup/index.dist.js",
     "esbuild:proxy-client": "esbuild dist_esm/yao-node-client/index.js --bundle --platform=node --outfile=dist_esm/yao-node-client/bound-cient.js",
     "test": "jest",
     "rollup:proxy-client": "rollup -c rollup.config.mjs -i dist_esm/yao-node-client/index.js -o dist_esm/yao-node-client/bound-rollup.bound.js",
@@ -24,7 +28,7 @@
     "yao:rollup": "rimraf yao && rollup -c rollup.config.mjs"
   },
   "keywords": [
-    "yao-client",
+    "yao-no-client",
     "yao"
   ],
   "author": "vincentwwsheng@gmail.com",
@@ -33,7 +37,8 @@
     "dotenv": "^16.0.3",
     "mime": "^3.0.0",
     "sync-fetch": "^0.4.2",
-    "ws": "^8.12.1"
+    "ws": "^8.12.1",
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^4.0.3",
@@ -46,6 +51,7 @@
     "@types/node": "^18.14.0",
     "@types/sync-fetch": "^0.4.0",
     "@types/ws": "^8.5.4",
+    "@types/yargs": "^17.0.22",
     "concurrently": "^7.6.0",
     "deepmerge": "^4.3.0",
     "esbuild": "^0.17.8",
