@@ -1,9 +1,7 @@
 import YaoAction from "./action";
 import YaoComponent from "./component";
-import YaoCompute from "./compute";
 import YaoField from "./field";
 import YaoHook from "./hook";
-import mapping from "./mapping";
 
 export namespace YaoList {
   // DSL the list DSL

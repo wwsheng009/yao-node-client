@@ -1,4 +1,3 @@
-import YaoHook from "./hook";
 
 export namespace YaoAction {
   export type Process = {
