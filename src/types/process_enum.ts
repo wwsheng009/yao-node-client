@@ -297,6 +297,14 @@ export namespace ProcessEnum {
       /**`[<Widget ID>, <主键>,<记录>]`|返回更新行|调用关联处理器，更新单条记录|*/
       Update = "yao.form.Update",
     }
+    export enum list {
+      Setting = "yao.list.Setting",
+      Xgen = "yao.list.Xgen",
+      Component = "yao.list.Component",
+      Upload = "yao.list.Upload",
+      Download = "yao.list.Download",
+      Save = "yao.list.Save",
+    }
     /**
      * App Widget 处理器
      */
@@ -314,8 +322,10 @@ export namespace ProcessEnum {
     export enum chart {
       /**`[<Widget ID>]`|返回图表配置|返回图表 DSL 信息|*/
       Setting = "yao.chart.Setting",
-      /**`[<Widget ID>]`|返回图表配置|返回图表配置信息, 用于 XGEN 界面引擎页面渲染|*/
+      /**`[<Widget ID>]`|返回图表Xgen配置|*/
       Xgen = "yao.chart.Xgen",
+      /**`[<Widget ID>]`|chart,xpath,method|*/
+      Component = "yao.chart.Component",
       /**`[<Widget ID>, ...<自定义参数表>]`|返回各个图表统计结果|调用关联处理器，查询图表统计结果|*/
       Data = "yao.chart.Data",
     }

@@ -8,11 +8,12 @@ export { Studio } from "./studio";
 export { http } from "./http";
 export { WebSocket } from "./websocket";
 export { Query } from "./query";
-export {
-  QueryOrder,
-  QueryParam,
-  QueryWhere,
-  QueryWith,
-} from "../types/query_params";
+// export {
+//   QueryOrder,
+//   QueryParam,
+//   QueryWhere,
+//   QueryWith,
+// } from "../types/dsl/query_params";
 
 export * from "../types/process_enum";
+export * from "../types/dsl";

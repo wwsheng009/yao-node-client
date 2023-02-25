@@ -60,7 +60,9 @@ export class FS {
   }
   ReadFile(src: string): string {
     if (this.isLocal) {
-      return fs.readFileSync(path.join(this.basePath, src), "utf8");
+      let fpath = path.join(this.basePath, src);
+
+      return fs.readFileSync(fpath, "utf8");
     }
     return RemoteRequest({
       type: "FileSystem",
