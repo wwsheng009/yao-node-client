@@ -8,6 +8,3 @@ export { Studio } from "./studio";
 export { http } from "./http";
 export { WebSocket } from "./websocket";
 export { Query } from "./query";
-
-export * from "../types/process_enum";
-export * from "../types/dsl";
