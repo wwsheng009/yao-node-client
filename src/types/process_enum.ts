@@ -1,26 +1,29 @@
+/**
+ * 处理器的编辑器语法提示，带有_ID_提示的处理器需要自行替换对象。
+ */
 export namespace ProcessEnum {
   /**一组实用程序处理器 */
-  export namespace utils {
+  export namespace Utils {
     /**应用 */
-    export enum app {
+    export enum App {
       /** Ping服务器*/
       Ping = "utils.app.Ping",
       /** 读取服务器的状态*/
       Inspect = "utils.app.Inspect",
     }
     /**输入输出 */
-    export enum fmt {
+    export enum Fmt {
       Print = "utils.fmt.Print",
     }
     /**环境变量 */
-    export enum env {
+    export enum Env {
       Get = "utils.env.Get",
       Set = "utils.env.Set",
       GetMany = "utils.env.GetMany",
       SetMany = "utils.env.SetMany",
     }
     /**流程控制 */
-    export enum flow {
+    export enum Flow {
       For = "utils.flow.For",
       Each = "utils.flow.Each",
       Range = "utils.flow.Range",
@@ -29,22 +32,22 @@ export namespace ProcessEnum {
       Return = "utils.flow.Return",
     }
     /**JWT */
-    export enum jwt {
+    export enum Jwt {
       Make = "utils.jwt.Make",
       Verify = "utils.jwt.Verify",
     }
     /**密码 */
-    export enum pwd {
+    export enum Pwd {
       Hash = "utils.pwd.Hash",
       Verify = "utils.pwd.Verify",
     }
     /**图形/音频验证码 */
-    export enum captcha {
+    export enum Captcha {
       Make = "utils.captcha.Make",
       Verify = "utils.captcha.Verify",
     }
     /**String */
-    export enum str {
+    export enum Str {
       /**`[<...str>]`连接字符串 */
       Concat = "utils.str.Concat",
       /**`[<字符串数组>, <分隔符>]` 连接字符串*/
@@ -54,12 +57,12 @@ export namespace ProcessEnum {
     }
 
     /**日期时间 */
-    export enum time {
+    export enum Time {
       /**`[<毫秒>]` Sleep 单位 ms  */
       Sleep = "utils.time.Sleep",
     }
     /**日期时间*/
-    export enum now {
+    export enum Now {
       /**当前时刻时间戳 (秒)*/
       Timestamp = "utils.now.Timestamp",
       /**当前时刻时间戳 (毫秒)*/
@@ -73,7 +76,7 @@ export namespace ProcessEnum {
     }
 
     /**Array*/
-    export enum arr {
+    export enum Arr {
       Pluck = "utils.arr.Pluck",
       Split = "utils.arr.Split",
       Tree = "utils.arr.Tree",
@@ -82,7 +85,7 @@ export namespace ProcessEnum {
       Get = "utils.arr.Get",
     }
     /**Map*/
-    export enum map {
+    export enum Map {
       /** 字典读取 */
       Get = "utils.map.Get",
       Set = "utils.map.Set",
@@ -96,25 +99,6 @@ export namespace ProcessEnum {
 
   export namespace Task {}
 
-  /**Key-Value 数据存储处理器 */
-  export enum Store {
-    /**`[<Key>]`|Value|查询给定键的数值|*/
-    Get = "stores.<ID>.Get",
-    /**`[<Key>, <Value>, <有效期(可选)>]`|-|存储数值|*/
-    Set = "stores.<ID>.Set",
-    /**`[<Key>]`|存在返回 true, 不存在返回 false|查询给定键是否存在|*/
-    Has = "stores.<ID>.Has",
-    /**`[<Key>]`|-|删除键|*/
-    Del = "stores.<ID>.Del",
-    /**`[<Key>]`|Value|查询给定键的数值, 然后删除键|*/
-    GetDel = "stores.<ID>.GetDel",
-    /**`[]`|键数量|查询存储器键数量|*/
-    Len = "stores.<ID>.Len",
-    /**`[]`|键名数组|查询所有键名|*/
-    Keys = "stores.<ID>.Keys",
-    /**`[]`|-|清除所有键|*/
-    Clear = "stores.<ID>.Clear",
-  }
   /**
    * SSL 签名校验处理器
    */
@@ -125,28 +109,11 @@ export namespace ProcessEnum {
     Verify = "ssl.Verify",
   }
   /**
-   * 会话数据处理器
-   */
-  export enum Session {
-    /**`[]`|会话 ID|生成一个会话 ID|*/
-    Start = "session.Start",
-    /**`[]`|会话 ID|读取会话 ID|*/
-    ID = "session.ID",
-    /**`[<Key>]`|数值|读取会话数据|*/
-    Get = "session.Get",
-    /**`[<Key>, <Value>, <有效期(可选)>]`|-|设置会话数据|*/
-    Set = "session.Set",
-    /**`[<Data>, <有效期(可选)>]`|-|批量设置会话数据|*/
-    SetMany = "session.SetMany",
-    /**`[]`|会话数据( Map )|读取所有会话数据|*/
-    Dump = "session.Dump",
-  }
-  /**
    * 数据表结构操作处理器
    *
    * ！！！请自行替换成ID字符串
    */
-  export namespace schema {
+  export namespace Schema {
     export enum ID {
       /**`[<数据库名称>]`|-|创建一个数据库(或 Schema)|*/
       Create = "schemas.<ID>.Create",
@@ -179,53 +146,12 @@ export namespace ProcessEnum {
     }
   }
 
-  /**
-   * Schedule Widget 处理器
-   */
-  export namespace Schedule {}
-  /**
-   * 数据模型原子操作处理器
-   *
-   * ！！！请自行替换成字符串
-   */
-  export namespace models {
-    export enum ID {
-      /**`[<主键值>,<查询条件>]`|单条记录|查询单条记录|*/
-      Find = "models.<ID>.Find",
-      /**`[<主键值>,<查询条件>]`|记录数组|按条件查询, 不分页|*/
-      Get = "models.<ID>.Get",
-      /**`[<查询条件>,<当前页码>, <每页显示记录数>]`|分页信息和记录数组|按条件查询, 分页|*/
-      Paginate = "models.<ID>.Paginate",
-      /**`[<记录>]`|新记录主键值|创建单条记录, 返回新创建记录 ID|*/
-      Create = "models.<ID>.Create",
-      /**`[<主键值>,<记录>]`|-|更新单条记录|*/
-      Update = "models.<ID>.Update",
-      /**`[<记录>]`|记录主键值|保存单条记录, 不存在创建记录, 存在更新记录, 返回记录 ID|*/
-      Save = "models.<ID>.Save",
-      /**`[<主键值>]`|-|删除单条记录(标记删除)|*/
-      Delete = "models.<ID>.Delete",
-      /**`[<主键值>]`|-|删除单条记录(真删除)|*/
-      Destroy = "models.<ID>.Destroy",
-      /**`[<字段名称数组>, <二维记录值数组>]`|成功插入行数|插入多条记录, 返回插入行数|*/
-      Insert = "models.<ID>.Insert",
-      /**`[<查询条件>,<记录>]`|成功更新行数|按条件更新记录, 返回更新行数|*/
-      UpdateWhere = "models.<ID>.UpdateWhere",
-      /**`[<查询条件>]`|成功删除行数|按条件删除数据, 返回删除行数(标记删除)|*/
-      DeleteWhere = "models.<ID>.DeleteWhere",
-      /**`[<查询条件>]`|成功删除行数|按条件删除数据, 返回删除行数(真删除)|*/
-      DestroyWhere = "models.<ID>.DestroyWhere",
-      /**`[<记录数组>, <记录(共有字段)>]`|创建或更新的记录主键值数组|保存多条记录, 不存在创建记录, 存在更新记录, 返回记录 ID 集合|*/
-      EachSave = "models.<ID>.EachSave",
-      /**`[<主键值数组>,<记录数组>, <记录(共有字段)>]`|创建或更新的记录主键值数组|删除一组给定 ID 的记录后，保存多条记录, 不存在创建, 存在更新, 返回 ID 集合|*/
-      EachSaveAfterDelete = "models.<ID>.EachSaveAfterDelete",
-    }
-  }
   export namespace Import {}
 
   /**
    * HTTP 请求处理器
    */
-  export enum http {
+  export enum Http {
     /**`[<URL>, <Query (可选)>, <Headers (可选)>]`|响应结果|发送 HTTP GET 请求|*/
     Get = "http.Get",
     /**`[<URL>, <Payload (可选)>, <Files (可选)>, <Query(可选)>, <Headers (可选)>]`|响应结果|发送 HTTP POST 请求|*/
@@ -248,7 +174,7 @@ export namespace ProcessEnum {
     /**
      * Table Widget 处理器
      */
-    export enum table {
+    export enum Table {
       /**`[<Widget ID>]`|返回表格配置|返回表格 DSL 信息|*/
       Setting = "yao.table.Setting",
       /**`[<Widget ID>]`|返回表格配置|返回表格配置信息, 用于 XGEN 界面引擎页面渲染|*/
@@ -281,7 +207,7 @@ export namespace ProcessEnum {
     /**
      * From Widget 处理器
      */
-    export enum form {
+    export enum Form {
       /**`[<Widget ID>]`|返回表单配置|返回表单 DSL 信息|*/
       Setting = "yao.form.Setting",
       /**`[<Widget ID>]`|返回表单配置|返回表单配置信息, 用于 XGEN 界面引擎页面渲染|*/
@@ -297,7 +223,7 @@ export namespace ProcessEnum {
       /**`[<Widget ID>, <主键>,<记录>]`|返回更新行|调用关联处理器，更新单条记录|*/
       Update = "yao.form.Update",
     }
-    export enum list {
+    export enum List {
       Setting = "yao.list.Setting",
       Xgen = "yao.list.Xgen",
       Component = "yao.list.Component",
@@ -308,7 +234,7 @@ export namespace ProcessEnum {
     /**
      * App Widget 处理器
      */
-    export enum app {
+    export enum App {
       /**|返回应用配置信息|读取应用配置|*/
       setting = "yao.app.setting",
       /**|返回菜单|读取应用菜单|*/
@@ -319,7 +245,7 @@ export namespace ProcessEnum {
     /**
      * Chart Widget 处理器
      */
-    export enum chart {
+    export enum Chart {
       /**`[<Widget ID>]`|返回图表配置|返回图表 DSL 信息|*/
       Setting = "yao.chart.Setting",
       /**`[<Widget ID>]`|返回图表Xgen配置|*/
@@ -332,7 +258,7 @@ export namespace ProcessEnum {
     /**
      * 内建组件相关处理器。一般作为 Cloud Props 处理器
      */
-    export enum component {
+    export enum Component {
       /**
        * ```json
        * {
@@ -346,7 +272,7 @@ export namespace ProcessEnum {
        * |`<Select组件 props.options 数组>`|返回 Select 组件 `Options`|*/
       SelectOptions = "yao.component.SelectOptions",
     }
-    export enum login {
+    export enum Login {
       /**`[<用户登录表单数据>]`|返回登录信息|查询 `xiang.user` 模型( `xiang_user` 数据表), 检查用户邮箱密码，验证用户登录并返回登录信息|*/
       Admin = "yao.login.Admin",
     }
@@ -354,8 +280,8 @@ export namespace ProcessEnum {
   /**
    * Login Widget 处理器
    */
-  export namespace fs {
-    export enum system {
+  export namespace Fs {
+    export enum System {
       /** `[<文件名>]`|文件内容(String)|读取文件内容, 用于文本文件*/
       ReadFile = "fs.system.ReadFile       ",
       /**`[<文件名>]`|文件内容([]Byte/Unit8Array)|读取文件内容,用于二进制文件*/
@@ -411,23 +337,23 @@ export namespace ProcessEnum {
     }
   }
   /**编码解码处理器*/
-  export namespace encoding {
+  export namespace Encoding {
     /**Base64*/
-    export enum base64 {
+    export enum Base64 {
       /**`[<Source>]` Base64 编码字符串*/
       Encode = "encoding.base64.Encode",
       /**`[<Base64Code>]` 原始字符串*/
       Decode = "encoding.base64.Decode",
     }
     /**十六进制*/
-    export enum hex {
+    export enum Hex {
       /**`[<Source>]` 十六进制编码字符串*/
       Encode = "encoding.hex.Encode",
       /**`[<HexCode>]` 原始字符串 */
       Decode = "encoding.hex.Decode",
     }
     /**JSON*/
-    export enum json {
+    export enum Json {
       /**`[<SourceData>]` JSON 字符串*/
       Encode = "encoding.json.Encode",
       /**`[<JSON>]`  原始数据  */
@@ -437,7 +363,7 @@ export namespace ProcessEnum {
   /**
    * 加密解密处理器
    */
-  export enum crypto {
+  export enum Crypto {
     /**`[<算法>, <Source>]`|Hash String|Hash|*/
     Hash = "crypto.Hash",
     /**`[<算法>, <Source>, <Key>, <Encoding(可选)>]`|HMAC Hash String|HAMC Hash|*/
@@ -460,4 +386,165 @@ export namespace ProcessEnum {
   //   /**||将下载地址转换为路径|*/
   //   Upload = "Upload",
   // }
+
+  /**
+   * Schema operations
+   */
+  export namespace Schema {
+    /** Default Connector */
+    export enum Default {
+      Create = "schema.default.Create",
+      Drop = "schema.default.Drop",
+
+      Tables = "schema.default.Tables",
+      TableGet = "schema.default.TableGet",
+      TableCreate = "schema.default.TableCreate",
+      TableDrop = "schema.default.TableDrop",
+      TableRename = "schema.default.TableRename",
+      TableDiff = "schema.default.TableDiff",
+      TableSave = "schema.default.TableSave",
+
+      ColumnAdd = "schema.default.ColumnAdd",
+      ColumnAlt = "schema.default.ColumnAlt",
+      ColumnDel = "schema.default.ColumnDel",
+
+      IndexAdd = "schema.default.IndexAdd",
+      IndexDel = "schema.default.IndexDel",
+    }
+  }
+
+  export namespace Plugins {
+    /**
+     * ！！！不要直接使用，请自行替换成ID
+     */
+    export enum _ID_ {
+      /**
+       * ！！！不要直接使用，请自行替换成操作
+       */
+      Operation = "plugins.<ID>.<Operation>",
+    }
+  }
+  export namespace Flows {
+    /**
+     * ！！！不要直接使用，请自行替换成ID
+     */
+    export enum _ID_ {
+      /**
+       * ！！！不要直接使用，请自行替换成操作
+       */
+      Operation = "flows.<ID>.<Operation>",
+    }
+  }
+  export namespace Scripts {
+    /**
+     * ！！！不要直接使用，请自行替换成ID
+     */
+    export enum _ID_ {
+      /**
+       * ！！！不要直接使用，请自行替换成操作
+       */
+      Operation = "scripts.<ID>.<Operation>",
+    }
+  }
+  export namespace Tasks {
+    /**
+     * ！！！不要直接使用，请自行替换成ID
+     */
+    export enum _ID_ {
+      Add = "tasks.<ID>.Add",
+      Progress = "tasks.<ID>.Progress",
+      Get = "tasks.<ID>.Get",
+    }
+  }
+  export namespace Schedules {
+    /**
+     * ！！！不要直接使用，请自行替换成ID
+     */
+    export enum _ID_ {
+      Start = "schedules.<ID>.Start",
+      Stop = "schedules.<ID>.Stop",
+    }
+  }
+
+  /**
+   * 会话数据处理器
+   */
+  export enum Session {
+    /**`[]`|会话 ID|生成一个会话 ID|*/
+    Start = "session.Start",
+    /**`[]`|会话 ID|读取会话 ID|*/
+    ID = "session.ID",
+    /**`[<Key>]`|数值|读取会话数据|*/
+    Get = "session.Get",
+    /**`[<Key>, <Value>, <有效期(可选)>]`|-|设置会话数据|*/
+    Set = "session.Set",
+    /**`[<Data>, <有效期(可选)>]`|-|批量设置会话数据|*/
+    SetMany = "session.SetMany",
+    /**`[]`|会话数据( Map )|读取所有会话数据|*/
+    Dump = "session.Dump",
+  }
+  /**Key-Value 数据存储处理器 */
+
+  export namespace Store {
+    /**
+     * ！！！不要直接使用，请自行替换成ID
+     */
+    export enum _ID_ {
+      /**`[<Key>]`|Value|查询给定键的数值|*/
+      Get = "stores.<ID>.Get",
+      /**`[<Key>, <Value>, <有效期(可选)>]`|-|存储数值|*/
+      Set = "stores.<ID>.Set",
+      /**`[<Key>]`|存在返回 true, 不存在返回 false|查询给定键是否存在|*/
+      Has = "stores.<ID>.Has",
+      /**`[<Key>]`|-|删除键|*/
+      Del = "stores.<ID>.Del",
+      /**`[<Key>]`|Value|查询给定键的数值, 然后删除键|*/
+      GetDel = "stores.<ID>.GetDel",
+      /**`[]`|键数量|查询存储器键数量|*/
+      Len = "stores.<ID>.Len",
+      /**`[]`|键名数组|查询所有键名|*/
+      Keys = "stores.<ID>.Keys",
+      /**`[]`|-|清除所有键|*/
+      Clear = "stores.<ID>.Clear",
+    }
+  }
+  /**
+   * 数据模型原子操作处理器
+   *
+   */
+  export namespace Models {
+    /**
+     *  ！！！不要直接使用_ID_，请自行替换成 **模型名称**
+     */
+    export enum _ID_ {
+      /**`[<主键值>,<查询条件>]`|单条记录|查询单条记录|*/
+      Find = "models.<ID>.Find",
+      /**`[<主键值>,<查询条件>]`|记录数组|按条件查询, 不分页|*/
+      Get = "models.<ID>.Get",
+      /**`[<查询条件>,<当前页码>, <每页显示记录数>]`|分页信息和记录数组|按条件查询, 分页|*/
+      Paginate = "models.<ID>.Paginate",
+      /**`[<记录>]`|新记录主键值|创建单条记录, 返回新创建记录 ID|*/
+      Create = "models.<ID>.Create",
+      /**`[<主键值>,<记录>]`|-|更新单条记录|*/
+      Update = "models.<ID>.Update",
+      /**`[<记录>]`|记录主键值|保存单条记录, 不存在创建记录, 存在更新记录, 返回记录 ID|*/
+      Save = "models.<ID>.Save",
+      /**`[<主键值>]`|-|删除单条记录(标记删除)|*/
+      Delete = "models.<ID>.Delete",
+      /**`[<主键值>]`|-|删除单条记录(真删除)|*/
+      Destroy = "models.<ID>.Destroy",
+      /**`[<字段名称数组>, <二维记录值数组>]`|成功插入行数|插入多条记录, 返回插入行数|*/
+      Insert = "models.<ID>.Insert",
+      /**`[<查询条件>,<记录>]`|成功更新行数|按条件更新记录, 返回更新行数|*/
+      UpdateWhere = "models.<ID>.UpdateWhere",
+      /**`[<查询条件>]`|成功删除行数|按条件删除数据, 返回删除行数(标记删除)|*/
+      DeleteWhere = "models.<ID>.DeleteWhere",
+      /**`[<查询条件>]`|成功删除行数|按条件删除数据, 返回删除行数(真删除)|*/
+      DestroyWhere = "models.<ID>.DestroyWhere",
+      /**`[<记录数组>, <记录(共有字段)>]`|创建或更新的记录主键值数组|保存多条记录, 不存在创建记录, 存在更新记录, 返回记录 ID 集合|*/
+      EachSave = "models.<ID>.EachSave",
+      /**`[<主键值数组>,<记录数组>, <记录(共有字段)>]`|创建或更新的记录主键值数组|删除一组给定 ID 的记录后，保存多条记录, 不存在创建, 存在更新, 返回 ID 集合|*/
+      EachSaveAfterDelete = "models.<ID>.EachSaveAfterDelete",
+    }
+  }
 }
