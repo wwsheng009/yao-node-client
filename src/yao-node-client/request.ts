@@ -1,11 +1,11 @@
 import fetch from "sync-fetch";
 
-let apiKey = ""; //process.env.YAO_API_KEY;
+let apiKey = ""; //process.env.YAO_API_ACCESS_KEY;
 let proxyServerUrl = ""; //process.env.YAO_APP_PROXY_ENDPOINT; //"http://localhost:5199/api/proxy/call";
 
 require("dotenv").config();
-if (process.env.YAO_API_KEY) {
-  apiKey = process.env.YAO_API_KEY;
+if (process.env.YAO_API_ACCESS_KEY) {
+  apiKey = process.env.YAO_API_ACCESS_KEY;
 }
 if (process.env.YAO_APP_PROXY_ENDPOINT) {
   proxyServerUrl = process.env.YAO_APP_PROXY_ENDPOINT;
