@@ -82,7 +82,9 @@ export class FS {
   }
   WriteFile(src: string, str: any, mode?: number) {
     if (this.isLocal) {
-      return fs.writeFileSync(path.join(this.basePath, src), str, { mode });
+      const fname = path.join(this.basePath, src);
+      makeParentFolder(fname);
+      return fs.writeFileSync(fname, str, { mode });
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -96,7 +98,9 @@ export class FS {
     mode?: number
   ) {
     if (this.isLocal) {
-      return fs.writeFileSync(path.join(this.basePath, src), buffer, { mode });
+      const fname = path.join(this.basePath, src);
+      makeParentFolder(fname);
+      return fs.writeFileSync(fname, buffer, { mode });
     }
     return RemoteRequest({
       type: "FileSystem",
@@ -358,8 +362,7 @@ function readDirAll(dir: string) {
   return files;
 }
 
-function rmoveLocal(src: string) {
-  const srcPath = path.join(this.basePath, src);
+function rmoveLocal(srcPath: string) {
   const stat = fs.statSync(srcPath);
   if (stat.isDirectory()) {
     const files = fs.readdirSync(srcPath);
@@ -374,6 +377,7 @@ function rmoveLocal(src: string) {
 function localCopy(src: string, target: string) {
   const stat = fs.statSync(src);
   if (!stat.isDirectory()) {
+    makeParentFolder(target);
     fs.copyFileSync(src, target);
   } else {
     let files = fs.readdirSync(src);
@@ -384,5 +388,12 @@ function localCopy(src: string, target: string) {
       const destFile = `${target}${path.sep}${file}`;
       localCopy(srcFile, destFile);
     });
+  }
+}
+
+function makeParentFolder(target: string) {
+  const parentFolder = path.dirname(target);
+  if (!fs.existsSync(parentFolder)) {
+    fs.mkdirSync(parentFolder, { recursive: true });
   }
 }
