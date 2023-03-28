@@ -53,10 +53,6 @@ import {
  * @returns
  */
 export function Process(method: string, ...args: any[]) {
-  let fname = GetFileName(method);
-  if (fname) {
-    return CallLocalProcess(fname, method, ...args);
-  }
   let process = method.toLowerCase();
 
   if (
@@ -109,6 +105,18 @@ export function Process(method: string, ...args: any[]) {
   ) {
     return processArry(method, ...args);
   }
+
+  if (
+    method.startsWith("scripts.") ||
+    method.startsWith("studio.") ||
+    method.startsWith("services.")
+  ) {
+    let fname = GetFileName(method);
+    if (fname) {
+      return CallLocalProcess(fname, method, ...args);
+    }
+  }
+
   return RemoteRequest({ type: "Process", method: method, args });
 }
 
@@ -184,6 +192,7 @@ function processTime(method: string, ...args: any[]) {
   }
   return RemoteRequest({ type: "Process", method: method, args });
 }
+
 function processMap(method: string, ...args: any[]) {
   let process = method.toLowerCase();
   //参数1是object，参数2是key

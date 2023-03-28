@@ -1,6 +1,8 @@
 import path from "node:path";
 import fs from "fs";
 
+let ModuleCache: { [key: string]: any } = {};
+let PathCache: { [key: string]: string } = {};
 /**
  * 动态的调用本地文件的方法，被调用的方法需要使用export
  * @param fpath js文件路径
@@ -17,10 +19,19 @@ export function CallLocalProcess(
     throw Error(`调用的脚本不存在${fpath}`);
   }
   const method = GetMethodName(name);
+  if (method === "") {
+    throw Error(`流程：${name}，调用的方法：${method}不合法`);
+  }
+  if (ModuleCache[name]) {
+    return ModuleCache[name][method](...params);
+  }
   const module = require(fpath);
   if (!module[method]) {
     throw Error(`流程：${name}，调用的方法：${method}不存在或没有导出！`);
   }
+  ModuleCache[name] = module;
+  PathCache[name] = fpath;
+
   return module[method](...params);
 }
 export function GetMethodName(name: string) {
@@ -39,6 +50,9 @@ export function GetMethodName(name: string) {
  * @returns undefind 或是文件名
  */
 export function GetFileName(name: string) {
+  if (PathCache[name]) {
+    return PathCache[name];
+  }
   let paths = name.split(".");
   if (!paths || paths.length < 3) {
     return;

@@ -20,7 +20,7 @@ export function RemoteRequest(payload: {
   value?: object;
   message?: string;
 }) {
-  console.log(`Remote Request Call:${payload.type}:${payload.method}`);
+  // console.log(`Remote Request Call:${payload.type}:${payload.method}`);
   if (!proxyServerUrl || !proxyServerUrl.length) {
     throw new Error("代理地址为空，请配置环境变量YAO_APP_PROXY_ENDPOINT");
   }
