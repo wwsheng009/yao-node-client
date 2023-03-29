@@ -1,5 +1,6 @@
 import RemoteRequest from "./request";
-type Param = { [key: string]: any };
+import { YaoQuery } from "yao-app-ts-types";
+type Param = YaoQuery.QueryDSL; //{ [key: string]: any };
 /**
  * Yao Query 查询引擎代理
  */

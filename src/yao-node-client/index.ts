@@ -2,7 +2,7 @@ export { log } from "./log";
 export { $L } from "./lang";
 export { Store } from "./store";
 export { Exception } from "./exception";
-export { FS, FSSAPCE } from "./filesystem";
+export { FS } from "./filesystem";
 export { Process } from "./process";
 export { Studio } from "./studio";
 export { http } from "./http";

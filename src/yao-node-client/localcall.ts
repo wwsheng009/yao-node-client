@@ -64,8 +64,8 @@ export function GetFileName(name: string) {
   paths.splice(-1, 1);
   let dir = path.join("dist", "app");
 
-  if (process.env.LOCAL_SCRIPT_DIST_ROOT) {
-    dir = process.env.LOCAL_SCRIPT_DIST_ROOT;
+  if (process.env.LOCAL_APP_ROOT) {
+    dir = process.env.LOCAL_APP_ROOT;
   }
   //脚本路径
   let fname = paths.join(path.sep);
