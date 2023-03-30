@@ -111,9 +111,9 @@ export class FS {
   ReadDir(src: string, recursive?: boolean): string[] {
     if (this.isLocal) {
       if (recursive) {
-        return readDirAll(path.join(this.basePath, src));
+        return readDirAll(this.basePath, path.join(this.basePath, src));
       } else {
-        return readDir(path.join(this.basePath, src));
+        return readDir(this.basePath, path.join(this.basePath, src));
       }
     }
     return RemoteRequest({
@@ -333,11 +333,11 @@ export class FS {
   }
 }
 
-function readDir(dir: string) {
+function readDir(base: string, dir: string) {
   let files: string[] = [];
   fs.readdirSync(dir).forEach((file) => {
     const src = `${dir}${path.sep}${file}`;
-    files.push(src);
+    files.push(`/${src.replace(base, "")}`);
   });
   return files;
 }
@@ -347,18 +347,15 @@ function readDir(dir: string) {
  * @param dir 目录
  * @returns 目录所有的文件列表，包含子目录
  */
-function readDirAll(dir: string) {
-  let files: string[] = [];
-  const readDirRecursive = (dir: string) => {
-    fs.readdirSync(dir).forEach((file) => {
-      const src = `${dir}${path.sep}${file}`;
-      if (fs.statSync(src).isDirectory()) {
-        readDirRecursive(src);
-      } else {
-        files.push(src);
-      }
-    });
-  };
+function readDirAll(base: string, dir: string): string[] {
+  const files: string[] = [];
+  for (const fileName of fs.readdirSync(dir)) {
+    const filePath = path.join(dir, fileName);
+    files.push(`/${filePath.replace(base, "")}`);
+    if (fs.statSync(filePath).isDirectory()) {
+      files.push(...readDirAll(base, filePath));
+    }
+  }
   return files;
 }
 
