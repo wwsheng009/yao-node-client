@@ -14,6 +14,7 @@ if (process.env.YAO_APP_PROXY_ENDPOINT) {
 export function RemoteRequest(payload: {
   type: string;
   method: string;
+  engine?: string;
   args?: object;
   space?: string;
   key?: string;

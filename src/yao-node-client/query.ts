@@ -6,8 +6,9 @@ type Param = YaoQuery.QueryDSL; //{ [key: string]: any };
  */
 export class Query {
   engine: string;
-  constructor(engin?: string) {
-    this.engine = engin;
+  constructor(engine?: string) {
+    //default or xiang
+    this.engine = engine || "";
   }
   // [key: string]: any;
   /**
@@ -19,7 +20,12 @@ export class Query {
    * @returns []Record
    */
   Get(args: Param) {
-    return RemoteRequest({ type: "Query", method: "Get", args });
+    return RemoteRequest({
+      type: "Query",
+      method: "Get",
+      engine: this.engine,
+      args,
+    });
   }
 
   // Paginate  {
@@ -40,7 +46,12 @@ export class Query {
    * @returns Paginate
    */
   Paginate(args: Param) {
-    return RemoteRequest({ type: "Query", method: "Paginate", args });
+    return RemoteRequest({
+      type: "Query",
+      method: "Paginate",
+      engine: this.engine,
+      args,
+    });
   }
   /**
    * 执行查询并返回一条数据记录
@@ -51,7 +62,12 @@ export class Query {
    * @returns Record
    */
   First(args: Param) {
-    return RemoteRequest({ type: "Query", method: "First", args });
+    return RemoteRequest({
+      type: "Query",
+      method: "First",
+      engine: this.engine,
+      args,
+    });
   }
   /**
    * 执行查询根据查询条件返回结果
@@ -62,6 +78,11 @@ export class Query {
    * @returns object
    */
   Run(args: Param) {
-    return RemoteRequest({ type: "Query", method: "Run", args });
+    return RemoteRequest({
+      type: "Query",
+      method: "Run",
+      engine: this.engine,
+      args,
+    });
   }
 }
