@@ -25,7 +25,8 @@
     "test": "jest",
     "rollup:proxy-client": "rollup -c rollup.config.mjs -i dist_esm/yao-node-client/index.js -o dist_esm/yao-node-client/bound-rollup.bound.js",
     "yao:build-direct": "rimraf dist_esm && tsc -p ./tsconfig-yao-deirect.json && tsc-alias -p ./tsconfig-yao-deirect.json",
-    "yao:rollup": "rimraf yao && rollup -c rollup.config.mjs"
+    "yao:rollup": "rimraf yao && rollup -c rollup.config.mjs",
+    "npm:publish": "npm run build && npm pack && npm publish"
   },
   "keywords": [
     "yao-no-client",
