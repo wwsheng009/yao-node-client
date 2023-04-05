@@ -57,10 +57,15 @@ export function GetFileName(name: string) {
   if (!paths || paths.length < 3) {
     return;
   }
-  if (!["scripts", "services", "studio"].includes(paths[0].toLowerCase())) {
+  if (
+    !["scripts", "services", "studio", "widgets"].includes(
+      paths[0].toLowerCase()
+    )
+  ) {
     //不代理
     return;
   }
+  //不需要方法名
   paths.splice(-1, 1);
   let dir = path.join("dist", "app");
 
@@ -69,8 +74,12 @@ export function GetFileName(name: string) {
   }
   //脚本路径
   let fname = paths.join(path.sep);
-
   let filePath = path.join(dir, `${fname}.js`);
+  if (paths[0].toLowerCase() === "widgets") {
+    //widget是固定的process.js
+    filePath = path.join(fname, "process.js");
+  }
+
   let fpath = path.resolve(filePath);
   if (!fs.existsSync(fpath)) {
     console.log(`info:本地process文件不存在:${fname}`);

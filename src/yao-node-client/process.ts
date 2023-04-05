@@ -53,28 +53,29 @@ import {
  * @returns
  */
 export function Process(method: string, ...args: any[]) {
-  let process = method.toLowerCase();
-
+  let processName = method.toLowerCase();
   if (
     ["xiang.sys.print", "xiang.helper.print", "utils.fmt.print"].includes(
-      process
+      processName
     )
   ) {
     console.log(JSON.stringify(args));
     return;
   }
 
-  if (["utils.str.concat", "xiang.helper.strconcat"].includes(process)) {
+  if (["utils.str.concat", "xiang.helper.strconcat"].includes(processName)) {
     return args.join("");
   }
-  if ("utils.str.join" == process) {
+  if ("utils.str.join" == processName) {
     return args[0].join(args[2]);
   }
-  if ("utils.str.joinpath" == process) {
+  if ("utils.str.joinpath" == processName) {
     return path.join(...args);
   }
   if (
-    ["xiang.flow.sleep", "xiang.sys.sleep", "yao.sys.sleep"].includes(process)
+    ["xiang.flow.sleep", "xiang.sys.sleep", "yao.sys.sleep"].includes(
+      processName
+    )
   ) {
     var waitTill = new Date(new Date().getTime() + args[0]);
     while (waitTill > new Date()) {}
@@ -109,7 +110,8 @@ export function Process(method: string, ...args: any[]) {
   if (
     method.startsWith("scripts.") ||
     method.startsWith("studio.") ||
-    method.startsWith("services.")
+    method.startsWith("services.") ||
+    method.startsWith("widgets.")
   ) {
     let fname = GetFileName(method);
     if (fname) {
