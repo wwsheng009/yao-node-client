@@ -13,6 +13,7 @@ import {
   ArrayMapSet,
   ArrayMapSetMapStr,
 } from "./array";
+import { YaoProcess } from "@/types/process";
 
 // export function CheckIsLocalProcessFilePath(name: string) {
 //   let paths = name.split(".");
@@ -52,7 +53,7 @@ import {
  * @param  {...any} args 参数
  * @returns
  */
-export function Process(method: string, ...args: any[]) {
+export function Process(method: YaoProcess, ...args: any[]) {
   let processName = method.toLowerCase();
   if (
     ["xiang.sys.print", "xiang.helper.print", "utils.fmt.print"].includes(
