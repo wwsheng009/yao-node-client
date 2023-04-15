@@ -173,4 +173,87 @@ export const http = {
     };
     return RemoteRequest(payload);
   },
+
+  /**
+   * http.Stream
+   * args[0] Method GET/POST/PUT/PATCH/DELETE/...
+   * args[1] URL
+   * args[2] Handler procsss name
+   * args[3] Payload <Optional> "Foo", {"foo":"bar"}, ["foo", "bar", {"k1":"v1"}], "/root/path"
+   * args[4] Query Params <Optional> {"k1":"v1", "k2":"v2"}, ["k1=v1","k1"="v11","k2"="v2"], [{"k1":"v1"},{"k1":"v11"},{"k2":"v2"}], k1=v1&k1=v11&k2=k2
+   * args[5] Headers <Optional> {"K1":"V1","K2":"V2"}  [{"K1":"V1"},{"K1":"V11"},{"K2":"V2"}]
+   * @param METHOD HTTP 调用方法
+   * @param URL http url地址
+   * @param Callback 回调函数
+   * @param Payload 请求内容
+   * @param Query 查询参数对象
+   * @param Headers 请求头
+   * @returns normal return 1  exception return -1 break return 0
+   */
+  Stream: function (
+    METHOD: string,
+    URL: string,
+    Callback?: Function,
+    Payload?: object,
+    Query?: object,
+    Headers?: HttpHeaders
+  ) {
+    let url = URL;
+
+    if (Query) {
+      //todo 需要优化
+      if (typeof Query === "object") {
+        const params = new URLSearchParams();
+        let query = Query as { [key: string]: string };
+        for (const key in query) {
+          params.append(key, query[key]);
+        }
+
+        const queryString = params.toString(); // "name=John&age=30&city=New%20York"
+        if (url.includes("?")) {
+          url = url + "&" + queryString;
+        } else {
+          url = url + "?" + queryString;
+        }
+      }
+    }
+
+    fetch(url, {
+      headers: Headers as Record<string, string>,
+      method: METHOD,
+      body: JSON.stringify({ ...Payload, stream: true }),
+    })
+      .then((response) => {
+        const reader = response.body?.getReader();
+        function readStream() {
+          if (reader) {
+            reader
+              .read()
+              .then(({ value, done }) => {
+                if (!done) {
+                  const data = new TextDecoder().decode(value);
+                  Callback?.(data);
+                  return readStream();
+                } else {
+                  // eslint-disable-next-line no-console
+                  console.trace("http stream api called done");
+                  return 1;
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                return -1;
+              });
+          }
+          return 1;
+        }
+        return readStream();
+      })
+      .catch((error) => {
+        console.log(error);
+        return -1;
+      });
+
+    return 1;
+  },
 };
