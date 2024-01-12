@@ -24,8 +24,14 @@ export function RemoteRequest(payload: {
   if (process.env.NODE_CLIENT_LOG) {
     console.log(`Remote Request Call:${payload.type}:${payload.method}`);
   }
+  const apiKey = process.env.YAO_API_ACCESS_KEY;
+  let proxyServerUrl = process.env.YAO_APP_PROXY_ENDPOINT;
+
   if (!proxyServerUrl || !proxyServerUrl.length) {
-    throw new Error("代理地址为空，请配置环境变量YAO_APP_PROXY_ENDPOINT");
+    throw new Error("请配置环境变量YAO_APP_PROXY_ENDPOINT");
+  }
+  if (!apiKey || !apiKey.length) {
+    throw new Error("请配置环境变量YAO_API_ACCESS_KEY");
   }
   const es = fetch(proxyServerUrl, {
     headers: {

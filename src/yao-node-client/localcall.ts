@@ -72,6 +72,11 @@ export function GetFileName(name: string) {
   if (process.env.LOCAL_APP_ROOT) {
     dir = process.env.LOCAL_APP_ROOT;
   }
+
+  // if not exists ,fallback to current directory
+  if (!fs.existsSync(dir)) {
+    dir = "./";
+  }
   //脚本路径
   let fname = paths.join(path.sep);
   let filePath = path.join(dir, `${fname}.js`);

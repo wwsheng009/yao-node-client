@@ -36,26 +36,38 @@ export class FS {
     }
     this.space = space;
     let yao_app_root = process.env.YAO_APP_ROOT;
-    if (typeof yao_app_root === "string") {
-      yao_app_root = path.resolve(yao_app_root);
-      const isValidPath = fs.existsSync(yao_app_root);
-      if (isValidPath) {
-        this.isLocal = true;
-        switch (this.space) {
-          case "system":
-            this.basePath = path.join(yao_app_root, "data", path.sep);
-            break;
-          case "script":
-            this.basePath = path.join(yao_app_root, "scripts", path.sep);
-            break;
-          case "dsl":
-            this.basePath = path.join(yao_app_root, path.sep);
-            break;
-          default:
-            this.isLocal = false;
-            break;
+    if (!yao_app_root) {
+      yao_app_root = "./";
+    }
+
+    this.isLocal = false;
+    switch (this.space) {
+      case "system":
+        yao_app_root = path.resolve(path.join(yao_app_root, "data", path.sep));
+        if (fs.existsSync(yao_app_root)) {
+          this.basePath = yao_app_root;
+          this.isLocal = true;
         }
-      }
+        break;
+      case "script":
+        yao_app_root = path.resolve(
+          path.join(yao_app_root, "scripts", path.sep)
+        );
+        if (fs.existsSync(yao_app_root)) {
+          this.basePath = yao_app_root;
+          this.isLocal = true;
+        }
+        this.basePath = path.join(yao_app_root, "scripts", path.sep);
+        break;
+      case "dsl":
+        yao_app_root = path.resolve(yao_app_root);
+        if (fs.existsSync(yao_app_root)) {
+          this.basePath = path.join(yao_app_root, path.sep);
+          this.isLocal = true;
+        }
+        break;
+      default:
+        break;
     }
   }
   ReadFile(src: string): string {
