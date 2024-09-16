@@ -8,3 +8,5 @@ export { Studio } from "./studio";
 export { http } from "./http";
 export { WebSocket } from "./websocket";
 export { Query } from "./query";
+
+export function ssWrite(str:any){}

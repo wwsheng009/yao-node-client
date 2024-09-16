@@ -92,7 +92,14 @@ export class FS {
       args: [src],
     });
   }
-  WriteFile(src: string, str: any, mode?: number) {
+  WriteFileBase64(src: string,str:any){
+    return RemoteRequest({
+      type: "FileSystem",
+      method: "WriteFileBase64",
+      args: [src, str],
+    });
+  }
+  WriteFile(src: string, str: any, mode?: number|string) {
     if (this.isLocal) {
       const fname = path.join(this.basePath, src);
       makeParentFolder(fname);
@@ -134,7 +141,7 @@ export class FS {
       args: [src, recursive],
     });
   }
-  Mkdir(src: string, mode?: number) {
+  Mkdir(src: string, mode?: number|string) {
     if (this.isLocal) {
       return fs.mkdirSync(path.join(this.basePath, src), { mode });
     }
@@ -150,7 +157,7 @@ export class FS {
    * @param mode 目录权限
    * @returns
    */
-  MkdirAll(src: string, mode?: number): string {
+  MkdirAll(src: string, mode?: number|string): string {
     if (this.isLocal) {
       return fs.mkdirSync(path.join(this.basePath, src), {
         recursive: true,
@@ -235,7 +242,7 @@ export class FS {
       args: [src],
     });
   }
-  Chmod(src: string, mode: number): void {
+  Chmod(src: string, mode: number|string): void {
     if (this.isLocal) {
       return fs.chmodSync(path.join(this.basePath, src), mode);
     }
