@@ -181,7 +181,7 @@ export function NewArrayTreeOption(option: {
     children: "children",
   };
 
-  if (option["empty"]) {
+  if (option["empty"] != null) {
     newOption.empty = option["empty"];
   }
 
@@ -234,7 +234,7 @@ function Tree(
       continue;
     }
     const pKey = `${parent}`;
-    if (!mapping[pKey]) {
+    if (mapping[pKey] == null) {
       continue;
     }
     let children = mapping[pKey][opt.children] as { [key: string]: any }[];
@@ -247,15 +247,15 @@ function Tree(
 
   const res: { [key: string]: any }[] = [];
   for (let i = 0; i < records.length; i++) {
-    if (records[i][opt.key]) {
+    if (records[i][opt.key] != null) {
       const record = mapping[`${records[i][opt.key]}`];
-      if (record[opt.parent]) {
+      if (record[opt.parent] != null) {
         const parent = `${record[opt.parent]}`;
         const empty = `${opt.empty}`;
         if (parent === empty) {
           // 父类为空
           res.push(record);
-        } else if (!mapping[parent]) {
+        } else if (mapping[parent] == null) {
           // 或者父类为定义的
           res.push(record);
         }
