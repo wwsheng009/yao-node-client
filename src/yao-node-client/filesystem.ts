@@ -338,6 +338,15 @@ export class FS {
       args: [src, target],
     });
   }
+
+  Merge(fileList: string[],str:string){
+    return RemoteRequest({
+      type: "FileSystem",
+      method: "Merge",
+      args: [fileList, str],
+    });
+  }
+
   Move(src: string, target: string): void {
     if (this.isLocal) {
       const old = path.join(this.basePath, src);
