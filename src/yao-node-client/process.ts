@@ -54,6 +54,7 @@ import { YaoProcess } from "@/types/process";
  * @returns
  */
 export function Process(method: YaoProcess, ...args: any[]) {
+
   let processName = method.toLowerCase();
   if (
     ["xiang.sys.print", "xiang.helper.print", "utils.fmt.print"].includes(
@@ -79,7 +80,7 @@ export function Process(method: YaoProcess, ...args: any[]) {
     )
   ) {
     var waitTill = new Date(new Date().getTime() + args[0]);
-    while (waitTill > new Date()) {}
+    while (waitTill > new Date()) { }
   }
   // encoding
   if (method.startsWith("encoding.")) {

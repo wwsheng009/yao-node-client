@@ -2,6 +2,13 @@ import { YaoProcess } from "@/types/process";
 import { CallLocalProcess, GetFileName } from "./localcall";
 import RemoteRequest from "./request";
 
+/**
+ * deprecated
+ * 
+ * @param method 
+ * @param args 
+ * @returns 
+ */
 export function Studio(method: YaoProcess, ...args: any[]) {
   const tmp_method = "studio." + method;
   let fpath = GetFileName(tmp_method);

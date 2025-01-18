@@ -2,11 +2,7 @@ import { RemoteRequest } from "./request";
 import fs from "fs";
 import path from "path";
 import mime from "mime";
-// export enum FSSAPCE {
-//   system = "system",
-//   script = "script",
-//   dsl = "dsl",
-// }
+
 /**
  * 使用 FS 对象实现文件操作。 Yao 提供 System, DSL, Script 三个空间,
  * System 用于应用数据操作,
@@ -21,18 +17,21 @@ import mime from "mime";
 
 export class FS {
   // [key: string]: any;
-  space: "system" | "dsl" | "script";
+  space: "data" | "app" | string;
   isLocal: boolean;
   basePath: string;
   /**
+   * data	/data/app/data	应用数据
+   * app	/data/app	应用目录
    * system	/data/app/data	应用数据
    * dsl	/data/app	除 scripts 外的所有目录(仅 Studio 脚本可用)
    * script	/data/app/scirpts	脚本目录(仅 Studio 脚本可用)
+   * app 应用目录
    * @param space
    */
-  constructor(space: "system" | "dsl" | "script") {
+  constructor(space: "data" | "app" | string) {
     if (!space) {
-      throw Error(`文件操作需要指定一个参数:"system" | "dsl" | "script"`);
+      throw Error(`文件操作需要指定一个参数:"data" | "app"`);
     }
     this.space = space;
     let yao_app_root = process.env.YAO_APP_ROOT;
@@ -42,6 +41,7 @@ export class FS {
 
     this.isLocal = false;
     switch (this.space) {
+      case "data":
       case "system":
         yao_app_root = path.resolve(path.join(yao_app_root, "data", path.sep));
         if (fs.existsSync(yao_app_root)) {
@@ -59,6 +59,7 @@ export class FS {
         }
         this.basePath = path.join(yao_app_root, "scripts", path.sep);
         break;
+      case "app":
       case "dsl":
         yao_app_root = path.resolve(yao_app_root);
         if (fs.existsSync(yao_app_root)) {
